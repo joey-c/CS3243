@@ -6,7 +6,7 @@ public class PlayerSkeleton {
 
 	//implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
-		double best = -10000, pos = 0.0;
+	double best = Double.NEGATIVE_INFINITY, pos = 0.0;
 		int toR = 0;
 		for(int j=0;j<legalMoves.length;j++){
 			pos = getMoveScorePierre(s,legalMoves[j][0], legalMoves[j][1]);
@@ -43,7 +43,7 @@ public class PlayerSkeleton {
 		
 		//check if game ended
 		if(height+pHeight[nextPiece][orient] >= ROWS) {
-			return 0;
+			return Double.NEGATIVE_INFINITY;
 		}
 
 		int[][] fieldCopy = new int[ROWS][COLS];
