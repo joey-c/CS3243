@@ -40,6 +40,7 @@ class StateTester {
 	}
 
 	public boolean makeMove(int orient, int slot) {
+		rowsClearedAfterMove = 0;
 		// height if the first column makes contact
 		int height = top[slot] - pBottom[nextPiece][orient][0];
 		// for each column beyond the first in the piece
