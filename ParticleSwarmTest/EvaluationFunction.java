@@ -45,7 +45,7 @@ public class EvaluationFunction extends FitnessFunction {
 			int orientation = currentMove[0];
 			int column = currentMove[1];
 			
-			StateTester clonedState = StateTester.fromState(s);
+			StateTester clonedState = StateTester.fromGame(currentGame);
 			clonedState.makeMove(orientation, column);
 			
 			int[][] fieldAfterMove = clonedState.getField();
@@ -59,7 +59,7 @@ public class EvaluationFunction extends FitnessFunction {
 			// 6. Cumulative Wells
 			// 7. Hole Depth
 			// 8. Row Holes
-			int landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value]; // Example of how to get weights.
+			double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value]; // Example of how to get weights.
 		}
 		return 0;
 	}
