@@ -32,14 +32,14 @@ public class EvaluationFunction extends FitnessFunction {
 		while (!currentGame.hasLost()) {
 			int[][] moves = currentGame.legalMoves();
 			
-			int chosenMove = pickMove(currentGame, moves);
+			int chosenMove = pickMove(currentGame, moves, position);
 			currentGame.makeMove(chosenMove);
 		}
 		
 		return currentGame.getRowsCleared();
 	}
 
-	private int pickMove(Game currentGame, int[][] moves) {
+	private int pickMove(Game currentGame, int[][] moves, int[] weights) {
 		for (int i = 0; i < moves.length; i++) {
 			int[] currentMove = moves[i];
 			int orientation = currentMove[0];
@@ -50,7 +50,16 @@ public class EvaluationFunction extends FitnessFunction {
 			
 			int[][] fieldAfterMove = clonedState.getField();
 			
-			// Do whatever.
+			// We want to evaluate this move based on the 8 characteristics:
+			// 1. Landing Height
+			// 2. Rows Cleared
+			// 3. Row Transitions
+			// 4. Column Transitions
+			// 5. Holes
+			// 6. Cumulative Wells
+			// 7. Hole Depth
+			// 8. Row Holes
+			int landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value]; // Example of how to get weights.
 		}
 		return 0;
 	}
