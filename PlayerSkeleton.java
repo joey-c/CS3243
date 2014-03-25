@@ -4,8 +4,8 @@ class StateTester {
 	int[] top;
 	int turn;
 	
-	int ROWS;
-	int COLS;
+	static int ROWS = State.ROWS;
+	static int COLS = State.COLS;
 	
 	public int rowsClearedAfterMove = 0;
 	
@@ -54,9 +54,6 @@ class StateTester {
 		this.field = s.getField();
 		this.top = s.getTop();
 
-		ROWS = State.ROWS;
-		COLS = State.COLS;
-		
 		turn = s.getTurnNumber() + 1;
 	}
 	
