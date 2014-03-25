@@ -1,6 +1,5 @@
 package ParticleSwarmTest;
 
-import StateTester;
 import net.sourceforge.jswarm_pso.FitnessFunction;
 
 enum Weight {
