@@ -3,7 +3,9 @@ public class PlayerSkeleton {
 
 	//implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
-		
+		// legalMoves: array of two-element arrays
+		// First element: orientation
+		// Second element: column
 		return 0;
 	}
 	
