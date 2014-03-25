@@ -35,8 +35,7 @@ class StateTester {
 		turn = s.getTurnNumber() + 1;
 	}
 
-	// Yay factories.
-	public static StateTester FromState(State s) {
+	public static StateTester fromState(State s) {
 		return new StateTester(s);
 	}
 
