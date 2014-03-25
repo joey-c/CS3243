@@ -55,7 +55,6 @@ class StateTester {
 
 		// for each column in the piece - fill in the appropriate blocks
 		for (int i = 0; i < pWidth[nextPiece][orient]; i++) {
-
 			// from bottom to top of brick
 			for (int h = height + pBottom[nextPiece][orient][i]; h < height
 					+ pTop[nextPiece][orient][i]; h++) {
@@ -83,11 +82,11 @@ class StateTester {
 				rowsClearedAfterMove++;
 				// for each column
 				for (int c = 0; c < COLS; c++) {
-
 					// slide down all bricks
 					for (int i = r; i < top[c]; i++) {
 						field[i][c] = field[i + 1][c];
 					}
+
 					// lower the top
 					top[c]--;
 					while (top[c] >= 1 && field[top[c] - 1][c] == 0)
