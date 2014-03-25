@@ -39,7 +39,7 @@ public class EvaluationFunction extends FitnessFunction {
 		return currentGame.getRowsCleared();
 	}
 
-	private int pickMove(Game currentGame, int[][] moves, int[] weights) {
+	private int pickMove(Game currentGame, int[][] moves, double[] weights) {
 		for (int i = 0; i < moves.length; i++) {
 			int[] currentMove = moves[i];
 			int orientation = currentMove[0];
