@@ -110,6 +110,19 @@ public class PlayerSkeleton {
 		// legalMoves: array of two-element arrays
 		// First element: orientation
 		// Second element: column
+		
+		for (int i = 0; i < legalMoves.length; i++) {
+			int[] currentMove = legalMoves[i];
+			int orientation = currentMove[0];
+			int column = currentMove[1];
+			
+			StateTester clonedState = StateTester.fromState(s);
+			clonedState.makeMove(orientation, column);
+			
+			int[][] fieldAfterMove = clonedState.getField();
+			
+			// Do whatever.
+		}
 		return 0;
 	}
 
