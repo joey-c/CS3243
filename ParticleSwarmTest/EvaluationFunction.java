@@ -54,9 +54,8 @@ public class EvaluationFunction extends FitnessFunction {
 			// 4. Column Transitions
 			// 5. Holes
 			// 6. Cumulative Wells
-			// 8. Row Holes
 
-			double weightedScore = 0; 
+			double weightedScore = 0;
 
 			// 2. Rows Cleared
 			double rowsClearedScore = calculateRowsClearedScore(weights,
@@ -68,7 +67,12 @@ public class EvaluationFunction extends FitnessFunction {
 					clonedState);
 			weightedScore += holeDepthScore;
 
-			// If this move scores better than the previous ones,
+            // 8. Row Holes
+            double rowsHolesScore = calculateRowsHolesScore(weights,
+                    clonedState);
+            weightedScore += rowsHolesScore;
+
+            // If this move scores better than the previous ones,
 			// set it as our choice.
 			if (weightedScore > currentHighScore) {
 				currentHighScore = weightedScore;
@@ -120,4 +124,47 @@ public class EvaluationFunction extends FitnessFunction {
 		return rowsClearedScore;
 	}
 
+	private double calculateRowsHolesScore(double[] weights,
+			StateTester clonedState){
+		double rowsHolesWeight = weights[Weight.ROW_HOLES.Value];
+
+		int[][] field = clonedState.getField();
+		int rowsWithHoles = countRowsHoles(field);
+
+		double score = (double) rowsWithHoles * rowsHolesWeight;
+		return score;
+	}
+
+	//A cell is a hole, or part of, if it is empty and
+	//its row is lower than its column's height
+	private int countRowsHoles(int[][] field){
+		int rowsWithHoles = 0;
+		int rows = field.length;
+		int columns = field[0].length;
+		int[] columnHeights = int[rows];
+
+		//get height of columns
+		//0: empty column
+		//1: index 0 is the highest filled cell in the column
+		int row;
+		for (int column = 0; column < columns; i++){
+			row = rows - 1; //fit indices
+			while (row >= 0 && field[row][column] == 0){
+				row--;
+			}
+			columnHeights[column] = row + 1;
+		}
+
+		//count rows containing holes
+		for (int[] row : field){
+			for (int cell : row){
+				if (row[cell] == 0 && columnHeights[cell] > row){
+					rowsWithHoles++;
+					break;
+				}
+			}
+		}
+
+		return rowsWithHoles;
+	}
 }
