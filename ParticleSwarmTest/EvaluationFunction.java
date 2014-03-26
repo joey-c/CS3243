@@ -90,6 +90,7 @@ public class EvaluationFunction extends FitnessFunction {
 		return score;
 	}
 
+	// TODO: look into better algorithms for this.
 	private int countHoleDepth(int[][] field) {
 		int totalHoleDepth = 0;
 		for (int row = 0; row < field.length; row++) {
