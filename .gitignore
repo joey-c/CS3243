@@ -1,5 +1,9 @@
 *.class
 
+# Intellij
+*.iml
+.idea/
+
 # Package Files #
 *.jar
 *.war
@@ -30,7 +34,7 @@ local.properties
 # PDT-specific
 .buildpath
 
-# sbteclipse plugin 
+# sbteclipse plugin
 .target
 
 # TeXlipse plugin
