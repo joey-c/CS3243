@@ -61,15 +61,29 @@ public class EvaluationFunction extends FitnessFunction {
 			// 6. Cumulative Wells
 			// 7. Hole Depth
 			// 8. Row Holes
-			double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value]; // Example of how to get weights.
 			
 			double weightedScore = 0; // This should contain the sum of all the characteristics.
+			
+			double rowsClearedScore = calculateRowsClearedScore(weights,
+					clonedState);
+			weightedScore += rowsClearedScore;
+			
+			// If this move scores better than the previous ones,
+			// set it as our choice.
 			if (weightedScore > currentHighScore) {
 				currentHighScore = weightedScore;
 				moveChoice = i;
 			}
 		}
+
 		return moveChoice;
+	}
+
+	private double calculateRowsClearedScore(double[] weights,
+			StateTester clonedState) {
+		double rowsClearedWeight = weights[Weight.ROWS_CLEARED.Value];
+		double rowsClearedScore = clonedState.rowsClearedAfterMove * rowsClearedWeight;
+		return rowsClearedScore;
 	}
 
 }
