@@ -30,12 +30,17 @@ public class EvaluationFunction extends FitnessFunction {
 		Game currentGame = new Game();
 		while (!currentGame.hasLost()) {
 			int[][] moves = currentGame.legalMoves();
-			
+
 			int chosenMove = pickMove(currentGame, moves, position);
 			currentGame.makeMove(chosenMove);
 		}
-		
-		return currentGame.getRowsCleared();
+
+		int rowsCleared = currentGame.getRowsCleared();
+		if (rowsCleared > 0) {
+			System.out.println("Rows cleared: " + rowsCleared);
+		}
+
+		return rowsCleared;
 	}
 
 	private int pickMove(Game currentGame, int[][] moves, double[] weights) {
