@@ -39,6 +39,9 @@ public class EvaluationFunction extends FitnessFunction {
 	}
 
 	private int pickMove(Game currentGame, int[][] moves, double[] weights) {
+		int moveChoice = 0;
+		double currentHighScore = 0;
+
 		for (int i = 0; i < moves.length; i++) {
 			int[] currentMove = moves[i];
 			int orientation = currentMove[0];
@@ -59,8 +62,14 @@ public class EvaluationFunction extends FitnessFunction {
 			// 7. Hole Depth
 			// 8. Row Holes
 			double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value]; // Example of how to get weights.
+			
+			double weightedScore = 0; // This should contain the sum of all the characteristics.
+			if (weightedScore > currentHighScore) {
+				currentHighScore = weightedScore;
+				moveChoice = i;
+			}
 		}
-		return 0;
+		return moveChoice;
 	}
 
 }
