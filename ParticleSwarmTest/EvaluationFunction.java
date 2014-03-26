@@ -90,7 +90,7 @@ public class EvaluationFunction extends FitnessFunction {
 		
 		int totalHoleDepth = 0;
 
-		double score = totalHoleDepth * holeDepthWeight;
+		double score = (double)totalHoleDepth * holeDepthWeight;
 		return score;
 	}
 
