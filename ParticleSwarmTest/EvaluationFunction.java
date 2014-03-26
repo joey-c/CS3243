@@ -50,8 +50,6 @@ public class EvaluationFunction extends FitnessFunction {
 			StateTester clonedState = StateTester.fromGame(currentGame);
 			clonedState.makeMove(orientation, column);
 			
-			int[][] fieldAfterMove = clonedState.getField();
-			
 			// We want to evaluate this move based on the 8 characteristics:
 			// 1. Landing Height
 			// 3. Row Transitions
@@ -63,7 +61,7 @@ public class EvaluationFunction extends FitnessFunction {
 			
 			double weightedScore = 0; // This should contain the sum of all the characteristics.
 			
-			// 2. Rows Cleared.
+			// 2. Rows Cleared
 			double rowsClearedScore = calculateRowsClearedScore(weights,
 					clonedState);
 			weightedScore += rowsClearedScore;
