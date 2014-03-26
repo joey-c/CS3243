@@ -66,6 +66,10 @@ public class EvaluationFunction extends FitnessFunction {
 					clonedState);
 			weightedScore += rowsClearedScore;
 			
+			// 7. Hole Depth
+			double holeDepthScore = calculateHoleDepthScore(weights,
+					clonedState);
+			weightedScore += holeDepthScore;
 			
 			// If this move scores better than the previous ones,
 			// set it as our choice.
@@ -76,6 +80,18 @@ public class EvaluationFunction extends FitnessFunction {
 		}
 
 		return moveChoice;
+	}
+
+	private double calculateHoleDepthScore(double[] weights,
+			StateTester clonedState) {
+		double holeDepthWeight = weights[Weight.HOLE_DEPTH.Value];
+		
+		int[][] field = clonedState.getField();
+		
+		int totalHoleDepth = 0;
+
+		double score = totalHoleDepth * holeDepthWeight;
+		return score;
 	}
 
 	private double calculateRowsClearedScore(double[] weights,
