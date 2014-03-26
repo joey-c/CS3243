@@ -54,7 +54,6 @@ public class EvaluationFunction extends FitnessFunction {
 			
 			// We want to evaluate this move based on the 8 characteristics:
 			// 1. Landing Height
-			// 2. Rows Cleared
 			// 3. Row Transitions
 			// 4. Column Transitions
 			// 5. Holes
@@ -64,9 +63,11 @@ public class EvaluationFunction extends FitnessFunction {
 			
 			double weightedScore = 0; // This should contain the sum of all the characteristics.
 			
+			// 2. Rows Cleared.
 			double rowsClearedScore = calculateRowsClearedScore(weights,
 					clonedState);
 			weightedScore += rowsClearedScore;
+			
 			
 			// If this move scores better than the previous ones,
 			// set it as our choice.
