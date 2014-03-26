@@ -90,13 +90,33 @@ public class EvaluationFunction extends FitnessFunction {
 	private double calculateHoleDepthScore(double[] weights,
 			StateTester clonedState) {
 		double holeDepthWeight = weights[Weight.HOLE_DEPTH.Value];
-		
+
 		int[][] field = clonedState.getField();
-		
-		int totalHoleDepth = 0;
+		int totalHoleDepth = countHoleDepth(field);
 
 		double score = (double)totalHoleDepth * holeDepthWeight;
 		return score;
+	}
+
+	private int countHoleDepth(int[][] field) {
+		int totalHoleDepth = 0;
+		for (int row = 0; row < field.length; row++) {
+			int[] currRow = field[row];
+
+			for (int col = 0; col < currRow.length; col++) {
+				boolean isCellHole = field[row][col] == 0;
+				if (isCellHole) {
+					for (int i = row + 1; i < field.length; i++) {
+						boolean isCurrCellFilled = field[i][col] != 0;
+						if (!isCurrCellFilled) {
+							break;
+						}
+						totalHoleDepth++;
+					}
+				}
+			}
+		}
+		return totalHoleDepth;
 	}
 
 	private double calculateRowsClearedScore(double[] weights,
