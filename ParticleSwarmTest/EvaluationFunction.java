@@ -100,25 +100,33 @@ public class EvaluationFunction extends FitnessFunction {
 		return score;
 	}
 
-	// TODO: look into better algorithms for this.
 	private int countHoleDepth(int[][] field) {
 		int totalHoleDepth = 0;
-		for (int row = 0; row < field.length; row++) {
-			int[] currRow = field[row];
 
-			for (int col = 0; col < currRow.length; col++) {
-				boolean isCellHole = field[row][col] == 0;
-				if (isCellHole) {
-					for (int i = row + 1; i < field.length; i++) {
-						boolean isCurrCellFilled = field[i][col] != 0;
-						if (!isCurrCellFilled) {
-							break;
-						}
-						totalHoleDepth++;
-					}
+		final int amountOfColumns = field[0].length;
+		final int amountOfRows = field.length;
+
+		for (int col = 0; col < amountOfColumns; col++) {
+			boolean hasHoleBefore = field[0][col] == 0;
+			int row = 1;
+			while (row < amountOfRows) {
+				int currentCell = field[row][col];
+
+				boolean isCellFilled = currentCell != 0;
+				if (isCellFilled && hasHoleBefore) {
+					// This cell is on top of a hole.
+					totalHoleDepth++;
+				} else if (!isCellFilled) {
+					// This cell is a hole.
+					hasHoleBefore = true;
 				}
+				// Otherwise, the cell is filled and is
+				// not on top of a hole. Disregard it.
+				
+				row++;
 			}
 		}
+
 		return totalHoleDepth;
 	}
 
