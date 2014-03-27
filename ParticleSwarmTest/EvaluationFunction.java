@@ -46,12 +46,14 @@ public class EvaluationFunction extends FitnessFunction {
 			int orientation = currentMove[0];
 			int column = currentMove[1];
 
-			StateTester clonedState = StateTester.fromGame(currentGame);
-			clonedState.makeMove(orientation, column);
+			StateTester stateBeforeMove = StateTester.fromGame(currentGame);
+			StateTester stateAfterMove = StateTester.fromGame(currentGame);
+			stateAfterMove.makeMove(orientation, column);
 
-			double weightedScore = calculateWeightedScore(weights, clonedState);
+			double weightedScore = calculateWeightedScore(weights,
+					stateBeforeMove, stateAfterMove);
 
-            // If this move scores better than the previous ones,
+			// If this move scores better than the previous ones,
 			// set it as our choice.
 			if (weightedScore > currentHighScore) {
 				currentHighScore = weightedScore;
@@ -63,7 +65,7 @@ public class EvaluationFunction extends FitnessFunction {
 	}
 
 	private double calculateWeightedScore(double[] weights,
-			StateTester clonedState) {
+			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		// 1. Landing Height
 		// 3. Row Transitions
 		// 4. Column Transitions
@@ -74,17 +76,15 @@ public class EvaluationFunction extends FitnessFunction {
 
 		// 2. Rows Cleared
 		double rowsClearedScore = calculateRowsClearedScore(weights,
-				clonedState);
+				stateAfterMove);
 		weightedScore += rowsClearedScore;
 
 		// 7. Hole Depth
-		double holeDepthScore = calculateHoleDepthScore(weights,
-				clonedState);
+		double holeDepthScore = calculateHoleDepthScore(weights, stateAfterMove);
 		weightedScore += holeDepthScore;
 
 		// 8. Row Holes
-		double rowsHolesScore = calculateRowsHolesScore(weights,
-		        clonedState);
+		double rowsHolesScore = calculateRowsHolesScore(weights, stateAfterMove);
 		weightedScore += rowsHolesScore;
 		return weightedScore;
 	}
@@ -131,7 +131,7 @@ public class EvaluationFunction extends FitnessFunction {
 	}
 
 	private double calculateRowsHolesScore(double[] weights,
-			StateTester clonedState){
+			StateTester clonedState) {
 		double rowsHolesWeight = weights[Weight.ROW_HOLES.Value];
 
 		int[][] field = clonedState.getField();
@@ -141,8 +141,8 @@ public class EvaluationFunction extends FitnessFunction {
 		return score;
 	}
 
-	//A cell is a hole, or part of, if it is empty and
-	//its row is lower than its column's height
+	// A cell is a hole, or part of, if it is empty and
+	// its row is lower than its column's height
 	private int countRowsHoles(int[][] field){
 		int rowsWithHoles = 0;
 		int rows = field.length;
