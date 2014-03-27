@@ -49,28 +49,7 @@ public class EvaluationFunction extends FitnessFunction {
 			StateTester clonedState = StateTester.fromGame(currentGame);
 			clonedState.makeMove(orientation, column);
 
-			// 1. Landing Height
-			// 3. Row Transitions
-			// 4. Column Transitions
-			// 5. Holes
-			// 6. Cumulative Wells
-
-			double weightedScore = 0;
-
-			// 2. Rows Cleared
-			double rowsClearedScore = calculateRowsClearedScore(weights,
-					clonedState);
-			weightedScore += rowsClearedScore;
-
-			// 7. Hole Depth
-			double holeDepthScore = calculateHoleDepthScore(weights,
-					clonedState);
-			weightedScore += holeDepthScore;
-
-            // 8. Row Holes
-            double rowsHolesScore = calculateRowsHolesScore(weights,
-                    clonedState);
-            weightedScore += rowsHolesScore;
+			double weightedScore = calculateWeightedScore(weights, clonedState);
 
             // If this move scores better than the previous ones,
 			// set it as our choice.
@@ -81,6 +60,33 @@ public class EvaluationFunction extends FitnessFunction {
 		}
 
 		return moveChoice;
+	}
+
+	private double calculateWeightedScore(double[] weights,
+			StateTester clonedState) {
+		// 1. Landing Height
+		// 3. Row Transitions
+		// 4. Column Transitions
+		// 5. Holes
+		// 6. Cumulative Wells
+
+		double weightedScore = 0;
+
+		// 2. Rows Cleared
+		double rowsClearedScore = calculateRowsClearedScore(weights,
+				clonedState);
+		weightedScore += rowsClearedScore;
+
+		// 7. Hole Depth
+		double holeDepthScore = calculateHoleDepthScore(weights,
+				clonedState);
+		weightedScore += holeDepthScore;
+
+		// 8. Row Holes
+		double rowsHolesScore = calculateRowsHolesScore(weights,
+		        clonedState);
+		weightedScore += rowsHolesScore;
+		return weightedScore;
 	}
 
 	private double calculateHoleDepthScore(double[] weights,
