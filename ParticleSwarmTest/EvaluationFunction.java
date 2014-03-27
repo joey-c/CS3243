@@ -46,33 +46,14 @@ public class EvaluationFunction extends FitnessFunction {
 			int orientation = currentMove[0];
 			int column = currentMove[1];
 
-			StateTester clonedState = StateTester.fromGame(currentGame);
-			clonedState.makeMove(orientation, column);
+			StateTester stateBeforeMove = StateTester.fromGame(currentGame);
+			StateTester stateAfterMove = StateTester.fromGame(currentGame);
+			stateAfterMove.makeMove(orientation, column);
 
-			// 1. Landing Height
-			// 3. Row Transitions
-			// 4. Column Transitions
-			// 5. Holes
-			// 6. Cumulative Wells
+			double weightedScore = calculateWeightedScore(weights,
+					stateBeforeMove, stateAfterMove);
 
-			double weightedScore = 0;
-
-			// 2. Rows Cleared
-			double rowsClearedScore = calculateRowsClearedScore(weights,
-					clonedState);
-			weightedScore += rowsClearedScore;
-
-			// 7. Hole Depth
-			double holeDepthScore = calculateHoleDepthScore(weights,
-					clonedState);
-			weightedScore += holeDepthScore;
-
-            // 8. Row Holes
-            double rowsHolesScore = calculateRowsHolesScore(weights,
-                    clonedState);
-            weightedScore += rowsHolesScore;
-
-            // If this move scores better than the previous ones,
+			// If this move scores better than the previous ones,
 			// set it as our choice.
 			if (weightedScore > currentHighScore) {
 				currentHighScore = weightedScore;
@@ -81,6 +62,31 @@ public class EvaluationFunction extends FitnessFunction {
 		}
 
 		return moveChoice;
+	}
+
+	private double calculateWeightedScore(double[] weights,
+			StateTester stateBeforeMove, StateTester stateAfterMove) {
+		// 1. Landing Height
+		// 3. Row Transitions
+		// 4. Column Transitions
+		// 5. Holes
+		// 6. Cumulative Wells
+
+		double weightedScore = 0;
+
+		// 2. Rows Cleared
+		double rowsClearedScore = calculateRowsClearedScore(weights,
+				stateAfterMove);
+		weightedScore += rowsClearedScore;
+
+		// 7. Hole Depth
+		double holeDepthScore = calculateHoleDepthScore(weights, stateAfterMove);
+		weightedScore += holeDepthScore;
+
+		// 8. Row Holes
+		double rowsHolesScore = calculateRowsHolesScore(weights, stateAfterMove);
+		weightedScore += rowsHolesScore;
+		return weightedScore;
 	}
 
 	private double calculateHoleDepthScore(double[] weights,
@@ -94,25 +100,33 @@ public class EvaluationFunction extends FitnessFunction {
 		return score;
 	}
 
-	// TODO: look into better algorithms for this.
 	private int countHoleDepth(int[][] field) {
 		int totalHoleDepth = 0;
-		for (int row = 0; row < field.length; row++) {
-			int[] currRow = field[row];
 
-			for (int col = 0; col < currRow.length; col++) {
-				boolean isCellHole = field[row][col] == 0;
-				if (isCellHole) {
-					for (int i = row + 1; i < field.length; i++) {
-						boolean isCurrCellFilled = field[i][col] != 0;
-						if (!isCurrCellFilled) {
-							break;
-						}
-						totalHoleDepth++;
-					}
+		final int amountOfColumns = field[0].length;
+		final int amountOfRows = field.length;
+
+		for (int col = 0; col < amountOfColumns; col++) {
+			boolean hasHoleBefore = field[0][col] == 0;
+			int row = 1;
+			while (row < amountOfRows) {
+				int currentCell = field[row][col];
+
+				boolean isCellFilled = currentCell != 0;
+				if (isCellFilled && hasHoleBefore) {
+					// This cell is on top of a hole.
+					totalHoleDepth++;
+				} else if (!isCellFilled) {
+					// This cell is a hole.
+					hasHoleBefore = true;
 				}
+				// Otherwise, the cell is filled and is
+				// not on top of a hole. Disregard it.
+				
+				row++;
 			}
 		}
+
 		return totalHoleDepth;
 	}
 
@@ -125,7 +139,7 @@ public class EvaluationFunction extends FitnessFunction {
 	}
 
 	private double calculateRowsHolesScore(double[] weights,
-			StateTester clonedState){
+			StateTester clonedState) {
 		double rowsHolesWeight = weights[Weight.ROW_HOLES.Value];
 
 		int[][] field = clonedState.getField();
@@ -135,8 +149,8 @@ public class EvaluationFunction extends FitnessFunction {
 		return score;
 	}
 
-	//A cell is a hole, or part of, if it is empty and
-	//its row is lower than its column's height
+	// A cell is a hole, or part of, if it is empty and
+	// its row is lower than its column's height
 	private int countRowsHoles(int[][] field){
 		int rowsWithHoles = 0;
 		int rows = field.length;
