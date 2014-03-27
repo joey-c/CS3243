@@ -141,13 +141,13 @@ public class EvaluationFunction extends FitnessFunction {
 		int rowsWithHoles = 0;
 		int rows = field.length;
 		int columns = field[0].length;
-		int[] columnHeights = int[rows];
+		int[] columnHeights = new int[rows];
 
 		//get height of columns
 		//0: empty column
 		//1: index 0 is the highest filled cell in the column
 		int row;
-		for (int column = 0; column < columns; i++){
+		for (int column = 0; column < columns; column++){
 			row = rows - 1; //fit indices
 			while (row >= 0 && field[row][column] == 0){
 				row--;
@@ -156,9 +156,9 @@ public class EvaluationFunction extends FitnessFunction {
 		}
 
 		//count rows containing holes
-		for (int[] row : field){
-			for (int cell : row){
-				if (row[cell] == 0 && columnHeights[cell] > row){
+		for (int i = 0; i < rows; i++){
+			for (int cell : field[i]){
+				if (field[i][cell] == 0 && columnHeights[cell] > i){
 					rowsWithHoles++;
 					break;
 				}
