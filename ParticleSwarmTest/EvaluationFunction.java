@@ -65,9 +65,9 @@ public class EvaluationFunction extends FitnessFunction {
 		double weightedScore = 0;
 		
 		// 1. Landing Height
-        double landingHeightScore = calculateLandingHeightScore(weights,
-                stateBeforeMove, stateAfterMove);
-        weightedScore += landingHeightScore;
+//        double landingHeightScore = calculateLandingHeightScore(weights,
+//                stateBeforeMove, stateAfterMove);
+//        weightedScore += landingHeightScore;
 
 		// 2. Rows Cleared
 		double rowsClearedScore = calculateRowsClearedScore(weights,
@@ -391,7 +391,6 @@ public class EvaluationFunction extends FitnessFunction {
 				}
 			}
 		}
-
 		return rowsWithHoles;
 	}
 
@@ -415,11 +414,31 @@ public class EvaluationFunction extends FitnessFunction {
         }
         return columnHeights;
     }
+
     private double calculateLandingHeightScore(double[] weights,
             StateTester stateBeforeMove, StateTester stateAfterMove) {
         double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
-        int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
+        int landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
 
-        return 0.0;
+        return (double) landingHeight * landingHeightWeight;
+    }
+
+    // Calculates the lowest landing height of a piece before the filled rows
+    // are cleared.
+    private int findLandingHeight(StateTester stateBeforeMove, StateTester stateAfterMove) {
+        int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
+        int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());
+        int[] columnHeightsAfter = getColumnHeights(stateAfterMove.getField());
+        int numColumns = stateBeforeMove.getField()[0].length;
+        int landingHeight = 0;
+
+        for (int i = 0; i < numColumns; i++) {
+            if (columnHeightsBefore[i] != columnHeightsAfter[i] + numRowsCleared) {
+                landingHeight = columnHeightsBefore[i];
+                break;
+            }
+        }
+
+        return landingHeight;
     }
 }
