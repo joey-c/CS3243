@@ -67,8 +67,6 @@ public class EvaluationFunction extends FitnessFunction {
 	private double calculateWeightedScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		// 1. Landing Height
-		// 3. Row Transitions
-		// 4. Column Transitions
 		// 5. Holes
 		// 6. Cumulative Wells
 
@@ -83,6 +81,11 @@ public class EvaluationFunction extends FitnessFunction {
 		double rowTransitionScore = calculateRowTransitionScore(weights,
 				stateAfterMove);
 		weightedScore += rowTransitionScore;
+		
+		//4. Column Transitions
+		double columnTransitionScore = calculateColumnTransitionScore(weights,
+				stateAfterMove);
+		weightedScore += columnTransitionScore;
 
 		// 7. Hole Depth
 		double holeDepthScore = calculateHoleDepthScore(weights, stateAfterMove);
@@ -92,6 +95,55 @@ public class EvaluationFunction extends FitnessFunction {
 		double rowsHolesScore = calculateRowsHolesScore(weights, stateAfterMove);
 		weightedScore += rowsHolesScore;
 		return weightedScore;
+	}
+	
+	private double calculateColumnTransitionScore(double[] weights,
+			StateTester clonedState) {
+		double columnTransitionWeight = weights[Weight.COLUMN_TRANSITIONS.Value];
+		
+		int [][] field = clonedState.getField();
+		int totalColumnTransitions = countColumnTransitions(field);
+		
+		double score = (double) totalColumnTransitions * columnTransitionWeight;
+		
+		return score;
+	}
+	
+	private int countColumnTransitions(int[][] field){
+		
+		int columnTransitionCount = 0;
+		final int amountOfColumns = field[0].length;
+		
+		for (int col=0; col < amountOfColumns; col++){
+			columnTransitionCount += getTransitionCountForColumn(col, field);
+		}
+	
+		return columnTransitionCount;
+	}
+	
+	private int getTransitionCountForColumn(int col, int[][] field){
+		
+		int transitionCount = 0;
+		final int amountOfRows = field.length;
+		
+		//Bottom implicitly filled
+		if (field[0][col] == 0){
+			transitionCount++;
+		}
+		
+		for(int row=0; row < amountOfRows-1; row++){
+			if ((field[row][col]==0 && field[row+1][col]!=0)||
+					(field[row][col]!=0 && field[row+1][col]==0)){
+				transitionCount++;
+			}
+		}
+		
+		//Top implicitly empty
+		if (field[amountOfRows-1][col] != 0){
+			transitionCount++;
+		}
+		
+		return transitionCount;
 	}
 	
 	private double calculateRowTransitionScore(double[] weights,
