@@ -67,9 +67,7 @@ public class EvaluationFunction extends FitnessFunction {
 	private double calculateWeightedScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		// 1. Landing Height
-		// 5. Holes
-		// 6. Cumulative Wells
-
+		
 		double weightedScore = 0;
 
 		// 2. Rows Cleared
@@ -91,6 +89,11 @@ public class EvaluationFunction extends FitnessFunction {
 		double buriedHolesScore = calculateBuriedHolesScore(weights,
 				stateAfterMove);
 		weightedScore += buriedHolesScore;
+		
+		//6. CumulativeWells
+		double cumulativeWellScore = calculateCumulativeWellScore(weights,
+				stateAfterMove);
+		weightedScore += cumulativeWellScore;
 
 		// 7. Hole Depth
 		double holeDepthScore = calculateHoleDepthScore(weights, stateAfterMove);
@@ -100,6 +103,71 @@ public class EvaluationFunction extends FitnessFunction {
 		double rowsHolesScore = calculateRowsHolesScore(weights, stateAfterMove);
 		weightedScore += rowsHolesScore;
 		return weightedScore;
+	}
+	
+	private double calculateCumulativeWellScore(double[] weights,
+			StateTester clonedState){
+		double cumulativeWellsWeight = weights[Weight.CUMULATIVE_WELLS.Value];
+		
+		int[][] field = clonedState.getField();
+		int cumulativeWellsCount = countCumulativeWells(field);
+		
+		double score = (double) cumulativeWellsCount * cumulativeWellsWeight;
+		
+		return score;
+	}
+	
+	private int countCumulativeWells(int[][] field){
+		
+		int cumulativeWellsCount = 0;
+		final int amountOfColumns = field[0].length;
+		
+		for(int col=0; col < amountOfColumns; col++){
+			cumulativeWellsCount += countCumulativeWells(col, field);
+		}
+		
+		return cumulativeWellsCount;
+		
+	}
+	
+	private int countCumulativeWells(int col, int[][] field){
+		
+		int wellCount = 0;
+		final int amountOfRows = field.length;
+		final int amountOfColumns = field[0].length;
+		boolean leftFilled;
+		boolean rightFilled;
+		
+		for(int row=amountOfRows-1; row>=0; row--){
+			
+			if(col==0){
+				leftFilled = true;
+			} else if (field[row][col-1]==0){
+				leftFilled = false;
+			} else {
+				leftFilled = true;
+			}
+			
+			if(col==amountOfColumns-1){
+				rightFilled = true;
+			} else if (field[row][col+1]==0){
+				rightFilled = false;
+			} else {
+				rightFilled = true;
+			}
+			
+			if(leftFilled && rightFilled){
+				for(int i=row; i>=0; i--){
+					if(field[i][col]==0){
+						wellCount++;
+					} else {
+						break;
+					}
+				}
+			}
+			
+		}
+		return wellCount;
 	}
 	
 	private double calculateBuriedHolesScore(double[] weights, 
