@@ -51,7 +51,7 @@ public class EvaluationFunction extends FitnessFunction {
 
 			// If this move scores better than the previous ones,
 			// set it as our choice.
-			if (weightedScore > currentHighScore) {
+			if (weightedScore > currentHighScore || i == 0) {
 				currentHighScore = weightedScore;
 				moveChoice = i;
 			}
