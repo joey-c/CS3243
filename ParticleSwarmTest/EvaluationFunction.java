@@ -30,10 +30,6 @@ public class EvaluationFunction extends FitnessFunction {
 		}
 
 		int rowsCleared = currentGame.getRowsCleared();
-		if (rowsCleared > 0) {
-			System.out.println("Rows cleared: " + rowsCleared);
-		}
-
 		return rowsCleared;
 	}
 
@@ -67,30 +63,30 @@ public class EvaluationFunction extends FitnessFunction {
 	private double calculateWeightedScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		// 1. Landing Height
-		
+
 		double weightedScore = 0;
 
 		// 2. Rows Cleared
 		double rowsClearedScore = calculateRowsClearedScore(weights,
 				stateAfterMove);
 		weightedScore += rowsClearedScore;
-		
+
 		// 3. Row Transitions
 		double rowTransitionScore = calculateRowTransitionScore(weights,
 				stateAfterMove);
 		weightedScore += rowTransitionScore;
-		
-		//4. Column Transitions
+
+		// 4. Column Transitions
 		double columnTransitionScore = calculateColumnTransitionScore(weights,
 				stateAfterMove);
 		weightedScore += columnTransitionScore;
-		
-		//5. Holes
+
+		// 5. Holes
 		double buriedHolesScore = calculateBuriedHolesScore(weights,
 				stateAfterMove);
 		weightedScore += buriedHolesScore;
-		
-		//6. CumulativeWells
+
+		// 6. CumulativeWells
 		double cumulativeWellScore = calculateCumulativeWellScore(weights,
 				stateAfterMove);
 		weightedScore += cumulativeWellScore;
@@ -102,217 +98,218 @@ public class EvaluationFunction extends FitnessFunction {
 		// 8. Row Holes
 		double rowsHolesScore = calculateRowsHolesScore(weights, stateAfterMove);
 		weightedScore += rowsHolesScore;
+
 		return weightedScore;
 	}
-	
+
 	private double calculateCumulativeWellScore(double[] weights,
-			StateTester clonedState){
+			StateTester clonedState) {
 		double cumulativeWellsWeight = weights[Weight.CUMULATIVE_WELLS.Value];
-		
+
 		int[][] field = clonedState.getField();
 		int cumulativeWellsCount = countCumulativeWells(field);
-		
+
 		double score = (double) cumulativeWellsCount * cumulativeWellsWeight;
-		
+
 		return score;
 	}
-	
-	private int countCumulativeWells(int[][] field){
-		
+
+	private int countCumulativeWells(int[][] field) {
+
 		int cumulativeWellsCount = 0;
 		final int amountOfColumns = field[0].length;
-		
-		for(int col=0; col < amountOfColumns; col++){
+
+		for (int col = 0; col < amountOfColumns; col++) {
 			cumulativeWellsCount += countCumulativeWells(col, field);
 		}
-		
+
 		return cumulativeWellsCount;
-		
+
 	}
-	
-	private int countCumulativeWells(int col, int[][] field){
-		
+
+	private int countCumulativeWells(int col, int[][] field) {
+
 		int wellCount = 0;
 		final int amountOfRows = field.length;
 		final int amountOfColumns = field[0].length;
 		boolean leftFilled;
 		boolean rightFilled;
-		
-		for(int row=amountOfRows-1; row>=0; row--){
-			
-			if(col==0){
+
+		for (int row = amountOfRows - 1; row >= 0; row--) {
+
+			if (col == 0) {
 				leftFilled = true;
-			} else if (field[row][col-1]==0){
+			} else if (field[row][col - 1] == 0) {
 				leftFilled = false;
 			} else {
 				leftFilled = true;
 			}
-			
-			if(col==amountOfColumns-1){
+
+			if (col == amountOfColumns - 1) {
 				rightFilled = true;
-			} else if (field[row][col+1]==0){
+			} else if (field[row][col + 1] == 0) {
 				rightFilled = false;
 			} else {
 				rightFilled = true;
 			}
-			
-			if(leftFilled && rightFilled){
-				for(int i=row; i>=0; i--){
-					if(field[i][col]==0){
+
+			if (leftFilled && rightFilled) {
+				for (int i = row; i >= 0; i--) {
+					if (field[i][col] == 0) {
 						wellCount++;
 					} else {
 						break;
 					}
 				}
 			}
-			
+
 		}
 		return wellCount;
 	}
-	
-	private double calculateBuriedHolesScore(double[] weights, 
-			StateTester clonedState){
+
+	private double calculateBuriedHolesScore(double[] weights,
+			StateTester clonedState) {
 		double buriedHolesWeight = weights[Weight.HOLES.Value];
-		
+
 		int[][] field = clonedState.getField();
 		int totalBuriedHoles = countBuriedHoles(field);
-		
+
 		double score = (double) totalBuriedHoles * buriedHolesWeight;
-		
+
 		return score;
 	}
-	
-	private int countBuriedHoles(int[][] field){
-		
+
+	private int countBuriedHoles(int[][] field) {
+
 		int buriedHolesCount = 0;
 		final int amountOfColumns = field[0].length;
-		
-		for(int col=0; col < amountOfColumns; col++){
+
+		for (int col = 0; col < amountOfColumns; col++) {
 			buriedHolesCount += countBuriedHolesInColumn(col, field);
 		}
-		
+
 		return buriedHolesCount;
 	}
-	
-	private int countBuriedHolesInColumn(int col, int[][] field){
-		
+
+	private int countBuriedHolesInColumn(int col, int[][] field) {
+
 		int holeCount = 0;
 		final int amountOfRows = field.length;
-		
+
 		boolean ceilingSeen = false;
-		
-		for(int row = amountOfRows-1; row>=0; row--){
-			if(ceilingSeen){
-				if(field[row][col]==0){
+
+		for (int row = amountOfRows - 1; row >= 0; row--) {
+			if (ceilingSeen) {
+				if (field[row][col] == 0) {
 					holeCount++;
 				}
 			} else {
-				if(field[row][col]!=0){
+				if (field[row][col] != 0) {
 					ceilingSeen = true;
 				}
 			}
 		}
-		
+
 		return holeCount;
 	}
-	
+
 	private double calculateColumnTransitionScore(double[] weights,
 			StateTester clonedState) {
 		double columnTransitionWeight = weights[Weight.COLUMN_TRANSITIONS.Value];
-		
-		int [][] field = clonedState.getField();
+
+		int[][] field = clonedState.getField();
 		int totalColumnTransitions = countColumnTransitions(field);
-		
+
 		double score = (double) totalColumnTransitions * columnTransitionWeight;
-		
+
 		return score;
 	}
-	
-	private int countColumnTransitions(int[][] field){
-		
+
+	private int countColumnTransitions(int[][] field) {
+
 		int columnTransitionCount = 0;
 		final int amountOfColumns = field[0].length;
-		
-		for (int col=0; col < amountOfColumns; col++){
+
+		for (int col = 0; col < amountOfColumns; col++) {
 			columnTransitionCount += getTransitionCountForColumn(col, field);
 		}
-	
+
 		return columnTransitionCount;
 	}
-	
-	private int getTransitionCountForColumn(int col, int[][] field){
-		
+
+	private int getTransitionCountForColumn(int col, int[][] field) {
+
 		int transitionCount = 0;
 		final int amountOfRows = field.length;
-		
-		//Bottom implicitly filled
-		if (field[0][col] == 0){
+
+		// Bottom implicitly filled
+		if (field[0][col] == 0) {
 			transitionCount++;
 		}
-		
-		for(int row=0; row < amountOfRows-1; row++){
-			if ((field[row][col]==0 && field[row+1][col]!=0)||
-					(field[row][col]!=0 && field[row+1][col]==0)){
+
+		for (int row = 0; row < amountOfRows - 1; row++) {
+			if ((field[row][col] == 0 && field[row + 1][col] != 0)
+					|| (field[row][col] != 0 && field[row + 1][col] == 0)) {
 				transitionCount++;
 			}
 		}
-		
-		//Top implicitly empty
-		if (field[amountOfRows-1][col] != 0){
+
+		// Top implicitly empty
+		if (field[amountOfRows - 1][col] != 0) {
 			transitionCount++;
 		}
-		
+
 		return transitionCount;
 	}
-	
+
 	private double calculateRowTransitionScore(double[] weights,
 			StateTester clonedState) {
 		double rowTransitionWeight = weights[Weight.ROW_TRANSITIONS.Value];
-		
+
 		int[][] field = clonedState.getField();
 		int totalRowTransitions = countRowTransitions(field);
-		
+
 		double score = (double) totalRowTransitions * rowTransitionWeight;
-		
+
 		return score;
 	}
-	
-	private int countRowTransitions(int[][] field){
-		
+
+	private int countRowTransitions(int[][] field) {
+
 		int rowTransitionCount = 0;
 		final int amountOfRows = field.length;
-		
-		for(int row=0; row < amountOfRows; row++){
+
+		for (int row = 0; row < amountOfRows; row++) {
 			rowTransitionCount += getTransitionCountForRow(row, field);
 		}
-		
+
 		return rowTransitionCount;
 	}
-	
-	private int getTransitionCountForRow(int row, int[][] field){
-		
+
+	private int getTransitionCountForRow(int row, int[][] field) {
+
 		int transitionCount = 0;
 		final int amountOfColumns = field[0].length;
-		
-		//Left edge implicitly filled
-		if(field[row][0]==0){
+
+		// Left edge implicitly filled
+		if (field[row][0] == 0) {
 			transitionCount++;
 		}
-		
-		for(int col=0; col < amountOfColumns-1; col++){
-			if ((field[row][col]==0 && field[row][col+1]!=0)||
-					(field[row][col]!=0 && field[row][col+1]==0)){
+
+		for (int col = 0; col < amountOfColumns - 1; col++) {
+			if ((field[row][col] == 0 && field[row][col + 1] != 0)
+					|| (field[row][col] != 0 && field[row][col + 1] == 0)) {
 				transitionCount++;
 			}
 		}
-		
-		//Right edge implicitly filled
-		if(field[row][amountOfColumns-1]==0){
+
+		// Right edge implicitly filled
+		if (field[row][amountOfColumns - 1] == 0) {
 			transitionCount++;
 		}
-		
+
 		return transitionCount;
-		
+
 	}
 
 	private double calculateHoleDepthScore(double[] weights,
@@ -348,7 +345,7 @@ public class EvaluationFunction extends FitnessFunction {
 				}
 				// Otherwise, the cell is filled and is
 				// not on top of a hole. Disregard it.
-				
+
 				row++;
 			}
 		}
@@ -377,28 +374,28 @@ public class EvaluationFunction extends FitnessFunction {
 
 	// A cell is a hole, or part of, if it is empty and
 	// its row is lower than its column's height
-	private int countRowsHoles(int[][] field){
+	private int countRowsHoles(int[][] field) {
 		int rowsWithHoles = 0;
 		int rows = field.length;
 		int columns = field[0].length;
 		int[] columnHeights = new int[rows];
 
-		//get height of columns
-		//0: empty column
-		//1: index 0 is the highest filled cell in the column
+		// get height of columns
+		// 0: empty column
+		// 1: index 0 is the highest filled cell in the column
 		int row;
-		for (int column = 0; column < columns; column++){
-			row = rows - 1; //fit indices
-			while (row >= 0 && field[row][column] == 0){
+		for (int column = 0; column < columns; column++) {
+			row = rows - 1; // fit indices
+			while (row >= 0 && field[row][column] == 0) {
 				row--;
 			}
 			columnHeights[column] = row + 1;
 		}
 
-		//count rows containing holes
-		for (int i = 0; i < rows; i++){
-			for (int cell : field[i]){
-				if (field[i][cell] == 0 && columnHeights[cell] > i){
+		// count rows containing holes
+		for (int i = 0; i < rows; i++) {
+			for (int cell : field[i]) {
+				if (field[i][cell] == 0 && columnHeights[cell] > i) {
 					rowsWithHoles++;
 					break;
 				}
