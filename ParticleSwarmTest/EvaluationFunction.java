@@ -86,6 +86,11 @@ public class EvaluationFunction extends FitnessFunction {
 		double columnTransitionScore = calculateColumnTransitionScore(weights,
 				stateAfterMove);
 		weightedScore += columnTransitionScore;
+		
+		//5. Holes
+		double buriedHolesScore = calculateBuriedHolesScore(weights,
+				stateAfterMove);
+		weightedScore += buriedHolesScore;
 
 		// 7. Hole Depth
 		double holeDepthScore = calculateHoleDepthScore(weights, stateAfterMove);
@@ -95,6 +100,52 @@ public class EvaluationFunction extends FitnessFunction {
 		double rowsHolesScore = calculateRowsHolesScore(weights, stateAfterMove);
 		weightedScore += rowsHolesScore;
 		return weightedScore;
+	}
+	
+	private double calculateBuriedHolesScore(double[] weights, 
+			StateTester clonedState){
+		double buriedHolesWeight = weights[Weight.HOLES.Value];
+		
+		int[][] field = clonedState.getField();
+		int totalBuriedHoles = countBuriedHoles(field);
+		
+		double score = (double) totalBuriedHoles * buriedHolesWeight;
+		
+		return score;
+	}
+	
+	private int countBuriedHoles(int[][] field){
+		
+		int buriedHolesCount = 0;
+		final int amountOfColumns = field[0].length;
+		
+		for(int col=0; col < amountOfColumns; col++){
+			buriedHolesCount += countBuriedHolesInColumn(col, field);
+		}
+		
+		return buriedHolesCount;
+	}
+	
+	private int countBuriedHolesInColumn(int col, int[][] field){
+		
+		int holeCount = 0;
+		final int amountOfRows = field.length;
+		
+		boolean ceilingSeen = false;
+		
+		for(int row = amountOfRows-1; row>=0; row--){
+			if(ceilingSeen){
+				if(field[row][col]==0){
+					holeCount++;
+				}
+			} else {
+				if(field[row][col]!=0){
+					ceilingSeen = true;
+				}
+			}
+		}
+		
+		return holeCount;
 	}
 	
 	private double calculateColumnTransitionScore(double[] weights,
