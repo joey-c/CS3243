@@ -1,8 +1,8 @@
 
 public class PlayerSkeleton {
 	
-	int ROWS;
-	int COLS;
+	int ROWS = 21;
+	int COLS = 10;
 
 	//implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
@@ -26,8 +26,7 @@ public class PlayerSkeleton {
 		int[][][] pBottom = s.getpBottom();
 		int[][][] pTop = s.getpTop();
 		int nextPiece = s.getNextPiece();
-		ROWS = s.ROWS;
-		COLS = s.COLS;
+
 		int[][] field = s.getField();
 		int turn = s.getTurnNumber();
 		
@@ -135,6 +134,7 @@ public class PlayerSkeleton {
 	}
 	
 	public int getAllWells(int x, int[][] someField){
+		
 		int wellValue  = 0;
 		int y          = 0;
 		int cellLeft   = 0;
@@ -143,9 +143,13 @@ public class PlayerSkeleton {
 	
 		for ( y = ROWS-1; y >= 1; y-- )
 		{
-			if ((x-1) >= 1)
+			if ((x-1) >= 0)
 			{
-				cellLeft  = someField[y][x-1];
+				if(someField[y][x-1]==0){
+					cellLeft = 0;
+				} else {
+					cellLeft = 1;
+				}
 			}
 			else
 			{
@@ -154,10 +158,13 @@ public class PlayerSkeleton {
 	
 			if ((x + 1) <= COLS-1)
 			{
-				cellRight = someField[y][x+1];
+				if(someField[y][x+1]==0){
+					cellRight = 0;
+				} else {
+					cellRight = 1;
+				}
 			}
-			else
-			{
+			else{
 				cellRight = 1;
 			}
 	
@@ -184,17 +191,15 @@ public class PlayerSkeleton {
 		int enable = 0;
 		int y      = 0;
 
-		for ( y = ROWS-1; y >= 1; y-- )
-		{
+		for ( y = ROWS-1; y >= 0; y-- ){
 			cell = someField[y][x];
-
-			if (0 != cell)
+			if (cell!=0)
 			{
 				enable = 1;
 			}
 			else
 			{
-				if (0 != enable)
+				if (enable!=0)
 				{
 					totalHoles++;
 				}
@@ -207,7 +212,7 @@ public class PlayerSkeleton {
 	public int getTransitionCountForCol(int x,int[][] someField){
 		int transitionCount = 0;
 
-		int y     = 0;
+		int y = 0;
 		int flagA = 0;
 		int flagB = 0;
 
@@ -229,8 +234,8 @@ public class PlayerSkeleton {
 			// from unoccupied to occupied, then it's a transition.
 			if 
 				( 
-				((0 != flagA) && (0 == flagB)) ||
-				((0 == flagA) && (0 != flagB)) 
+				((flagA!=0) && (flagB==0)) ||
+				((flagA==0) && (flagB!=0)) 
 				)
 			{
 				transitionCount++;
@@ -240,7 +245,7 @@ public class PlayerSkeleton {
 		// Check transition between left-exterior and column 1.
 		// (NOTE: Exterior is implicitly "occupied".)
 		flagA = someField[0][x];
-		if (0 == flagA) 
+		if (flagA==0) 
 		{
 			transitionCount++;
 		}
@@ -248,7 +253,7 @@ public class PlayerSkeleton {
 		// Check transition between column 'mWidth' and right-exterior.
 		// (NOTE: Exterior is implicitly "occupied".)
 		flagA = someField[ROWS-1][x];
-		if (0 == flagA) 
+		if (flagA==0) 
 		{
 			transitionCount++;
 		}
@@ -259,7 +264,7 @@ public class PlayerSkeleton {
 	public int getTransitionCountForRow(int y,int[][] someField){
 		int transitionCount = 0;
 
-		int x     = 0;
+		int x = 0;
 		int flagA = 0;
 		int flagB = 0;
 
@@ -281,8 +286,8 @@ public class PlayerSkeleton {
 			// from unoccupied to occupied, then it's a transition.
 			if 
 				( 
-				((0 != flagA) && (0 == flagB)) ||
-				((0 == flagA) && (0 != flagB)) 
+				((flagA!=0) && (flagB==0)) ||
+				((flagA==0) && (flagB!=0)) 
 				)
 			{
 				transitionCount++;
@@ -292,35 +297,32 @@ public class PlayerSkeleton {
 		// Check transition between left-exterior and column 1.
 		// (NOTE: Exterior is implicitly "occupied".)
 		flagA = someField[y][0];
-		if (0 == flagA) 
-		{
+		if (flagA==0) {
 			transitionCount++;
 		}
 
 		// Check transition between column 'mWidth' and right-exterior.
 		// (NOTE: Exterior is implicitly "occupied".)
 		flagA = someField[y][COLS-1];
-		if (0 == flagA) 
-		{
+		if (flagA==0) {
 			transitionCount++;
 		}
-
 		return( transitionCount );
 	}
 	
 	public static void main(String[] args) {
 		State s = new State();
-		new TFrame(s);
+		//new TFrame(s);
 		PlayerSkeleton p = new PlayerSkeleton();
 		while(!s.hasLost()) {
 			s.makeMove(p.pickMove(s,s.legalMoves()));
-			s.draw();
-			s.drawNext(0,0);
-			try {
+			//s.draw();
+			//s.drawNext(0,0);
+/*			try {
 				Thread.sleep(300);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}*/
 		}
 		System.out.println("You have completed "+s.getRowsCleared()+" rows.");
 	}
