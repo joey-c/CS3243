@@ -78,6 +78,11 @@ public class EvaluationFunction extends FitnessFunction {
 		double rowsClearedScore = calculateRowsClearedScore(weights,
 				stateAfterMove);
 		weightedScore += rowsClearedScore;
+		
+		// 3. Row Transitions
+		double rowTransitionScore = calculateRowTransitionScore(weights,
+				stateAfterMove);
+		weightedScore += rowTransitionScore;
 
 		// 7. Hole Depth
 		double holeDepthScore = calculateHoleDepthScore(weights, stateAfterMove);
@@ -87,6 +92,56 @@ public class EvaluationFunction extends FitnessFunction {
 		double rowsHolesScore = calculateRowsHolesScore(weights, stateAfterMove);
 		weightedScore += rowsHolesScore;
 		return weightedScore;
+	}
+	
+	private double calculateRowTransitionScore(double[] weights,
+			StateTester clonedState) {
+		double rowTransitionWeight = weights[Weight.ROW_TRANSITIONS.Value];
+		
+		int[][] field = clonedState.getField();
+		int totalRowTransitions = countRowTransitions(field);
+		
+		double score = (double) totalRowTransitions * rowTransitionWeight;
+		
+		return score;
+	}
+	
+	private int countRowTransitions(int[][] field){
+		
+		int rowTransitionCount = 0;
+		final int amountOfRows = field.length;
+		
+		for(int row=0; row < amountOfRows; row++){
+			rowTransitionCount += getTransitionCountForRow(row, field);
+		}
+		
+		return rowTransitionCount;
+	}
+	
+	private int getTransitionCountForRow(int row, int[][] field){
+		
+		int transitionCount = 0;
+		final int amountOfColumns = field[0].length;
+		
+		//Left edge implicitly filled
+		if(field[row][0]==0){
+			transitionCount++;
+		}
+		
+		for(int col=0; col < amountOfColumns-1; col++){
+			if ((field[row][col]==0 && field[row][col+1]!=0)||
+					(field[row][col]!=0 && field[row][col+1]==0)){
+				transitionCount++;
+			}
+		}
+		
+		//Right edge implicitly filled
+		if(field[row][amountOfColumns-1]==0){
+			transitionCount++;
+		}
+		
+		return transitionCount;
+		
 	}
 
 	private double calculateHoleDepthScore(double[] weights,
