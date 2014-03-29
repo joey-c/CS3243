@@ -65,6 +65,9 @@ public class EvaluationFunction extends FitnessFunction {
 		double weightedScore = 0;
 		
 		// 1. Landing Height
+        double landingHeightScore = calculateLandingHeightScore(weights,
+                stateBeforeMove, stateAfterMove);
+        weightedScore += landingHeightScore;
 
 		// 2. Rows Cleared
 		double rowsClearedScore = calculateRowsClearedScore(weights,
@@ -102,7 +105,7 @@ public class EvaluationFunction extends FitnessFunction {
 		return weightedScore;
 	}
 
-	private double calculateCumulativeWellScore(double[] weights,
+    private double calculateCumulativeWellScore(double[] weights,
 			StateTester clonedState) {
 		double cumulativeWellsWeight = weights[Weight.CUMULATIVE_WELLS.Value];
 
@@ -377,20 +380,7 @@ public class EvaluationFunction extends FitnessFunction {
 	private int countRowsHoles(int[][] field) {
 		int rowsWithHoles = 0;
 		int rows = field.length;
-		int columns = field[0].length;
-		int[] columnHeights = new int[rows];
-
-		// get height of columns
-		// 0: empty column
-		// 1: index 0 is the highest filled cell in the column
-		int row;
-		for (int column = 0; column < columns; column++) {
-			row = rows - 1; // fit indices
-			while (row >= 0 && field[row][column] == 0) {
-				row--;
-			}
-			columnHeights[column] = row + 1;
-		}
+		int[] columnHeights = getColumnHeights(field);
 
 		// count rows containing holes
 		for (int i = 0; i < rows; i++) {
@@ -404,4 +394,32 @@ public class EvaluationFunction extends FitnessFunction {
 
 		return rowsWithHoles;
 	}
+
+    // Took this from countRowsHoles(int[][]) and made it into a function
+    // as I was going to use it.
+    private int[] getColumnHeights(int[][] field) {
+        int rows = field.length;
+        int columns = field[0].length;
+        int[] columnHeights = new int[rows];
+
+        // get height of columns
+        // 0: empty column
+        // 1: index 0 is the highest filled cell in the column
+        int row;
+        for (int column = 0; column < columns; column++) {
+            row = rows - 1; // fit indices
+            while (row >= 0 && field[row][column] == 0) {
+                row--;
+            }
+            columnHeights[column] = row + 1;
+        }
+        return columnHeights;
+    }
+    private double calculateLandingHeightScore(double[] weights,
+            StateTester stateBeforeMove, StateTester stateAfterMove) {
+        double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
+        int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
+
+        return 0.0;
+    }
 }
