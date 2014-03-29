@@ -86,7 +86,7 @@ public class EvaluationFunction extends FitnessFunction {
 				stateAfterMove);
 		weightedScore += buriedHolesScore;
 
-		// 6. CumulativeWells
+		// 6. Cumulative Wells
 		double cumulativeWellScore = calculateCumulativeWellScore(weights,
 				stateAfterMove);
 		weightedScore += cumulativeWellScore;
