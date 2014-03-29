@@ -62,9 +62,9 @@ public class EvaluationFunction extends FitnessFunction {
 
 	private double calculateWeightedScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
-		// 1. Landing Height
-
 		double weightedScore = 0;
+		
+		// 1. Landing Height
 
 		// 2. Rows Cleared
 		double rowsClearedScore = calculateRowsClearedScore(weights,
