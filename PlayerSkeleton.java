@@ -216,8 +216,8 @@ public class PlayerSkeleton {
 		int flagA = 0;
 		int flagB = 0;
 
-		// Check cell and neighbor to right...
-		for ( y = 1; y < ROWS-1; y++ )
+		// Check cell and neighbor to top...
+		for ( y = 0; y < ROWS-1; y++ )
 		{
 			if(someField[y][x]==0){
 				flagA = 0;
@@ -242,18 +242,16 @@ public class PlayerSkeleton {
 			}
 		}
 
-		// Check transition between left-exterior and column 1.
-		// (NOTE: Exterior is implicitly "occupied".)
+		// Check transition with bottom - bottom is occupied
 		flagA = someField[0][x];
 		if (flagA==0) 
 		{
 			transitionCount++;
 		}
 
-		// Check transition between column 'mWidth' and right-exterior.
-		// (NOTE: Exterior is implicitly "occupied".)
+		// Check transition with top - top is unoccupied
 		flagA = someField[ROWS-1][x];
-		if (flagA==0) 
+		if (flagA!=0) 
 		{
 			transitionCount++;
 		}
@@ -269,7 +267,7 @@ public class PlayerSkeleton {
 		int flagB = 0;
 
 		// Check cell and neighbor to right...
-		for ( x = 1; x < COLS-1; x++ )
+		for ( x = 0; x < COLS-1; x++ )
 		{
 			if(someField[y][x]==0){
 				flagA = 0;
