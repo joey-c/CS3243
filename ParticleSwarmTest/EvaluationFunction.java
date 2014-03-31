@@ -65,9 +65,9 @@ public class EvaluationFunction extends FitnessFunction {
 		double weightedScore = 0;
 		
 		// 1. Landing Height
-//        double landingHeightScore = calculateLandingHeightScore(weights,
-//                stateBeforeMove, stateAfterMove);
-//        weightedScore += landingHeightScore;
+        double landingHeightScore = calculateLandingHeightScore(weights,
+                stateBeforeMove, stateAfterMove);
+        weightedScore += landingHeightScore;
 
 		// 2. Rows Cleared
 		double rowsClearedScore = calculateRowsClearedScore(weights,
