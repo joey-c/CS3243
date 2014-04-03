@@ -195,7 +195,6 @@ public class EvaluationFunction extends FitnessFunction {
 	}
 
 	private int countBuriedHolesInColumn(int col, int[][] field) {
-
 		int holeCount = 0;
 		final int amountOfRows = field.length;
 
@@ -206,10 +205,8 @@ public class EvaluationFunction extends FitnessFunction {
 				if (field[row][col] == 0) {
 					holeCount++;
 				}
-			} else {
-				if (field[row][col] != 0) {
-					ceilingSeen = true;
-				}
+			} else if (field[row][col] != 0) {
+				ceilingSeen = true;
 			}
 		}
 
