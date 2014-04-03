@@ -9,7 +9,6 @@ public class SwarmTester {
 		swarm.setMaxPosition(10); // The maximum any one weight could be.
 		swarm.setMinPosition(-10); // The minimum any one weight could be.
 		
-		
 		int maxSwarmIterations = 10000;
 		for (int i = 0; i < maxSwarmIterations; i++) {
 			swarm.evolve();
