@@ -229,7 +229,6 @@ public class EvaluationFunction extends FitnessFunction {
 	}
 
 	private int countColumnTransitions(int[][] field) {
-
 		int columnTransitionCount = 0;
 		final int amountOfColumns = field[0].length;
 
@@ -241,25 +240,14 @@ public class EvaluationFunction extends FitnessFunction {
 	}
 
 	private int getTransitionCountForColumn(int col, int[][] field) {
-
 		int transitionCount = 0;
 		final int amountOfRows = field.length;
-
-		// Bottom implicitly filled
-		if (field[0][col] == 0) {
-			transitionCount++;
-		}
 
 		for (int row = 0; row < amountOfRows - 1; row++) {
 			if ((field[row][col] == 0 && field[row + 1][col] != 0)
 					|| (field[row][col] != 0 && field[row + 1][col] == 0)) {
 				transitionCount++;
 			}
-		}
-
-		// Top implicitly empty
-		if (field[amountOfRows - 1][col] != 0) {
-			transitionCount++;
 		}
 
 		return transitionCount;
@@ -283,32 +271,22 @@ public class EvaluationFunction extends FitnessFunction {
 		final int amountOfRows = field.length;
 
 		for (int row = 0; row < amountOfRows; row++) {
-			rowTransitionCount += getTransitionCountForRow(row, field);
+			int[] rowValues = field[row];
+			rowTransitionCount += getTransitionCountForRow(rowValues);
 		}
 
 		return rowTransitionCount;
 	}
 
-	private int getTransitionCountForRow(int row, int[][] field) {
-
+	private int getTransitionCountForRow(int[] row) {
 		int transitionCount = 0;
-		final int amountOfColumns = field[0].length;
-
-		// Left edge implicitly filled
-		if (field[row][0] == 0) {
-			transitionCount++;
-		}
+		final int amountOfColumns = row.length;
 
 		for (int col = 0; col < amountOfColumns - 1; col++) {
-			if ((field[row][col] == 0 && field[row][col + 1] != 0)
-					|| (field[row][col] != 0 && field[row][col + 1] == 0)) {
+			if ((row[col] == 0 && row[col + 1] != 0)
+					|| (row[col] != 0 && row[col + 1] == 0)) {
 				transitionCount++;
 			}
-		}
-
-		// Right edge implicitly filled
-		if (field[row][amountOfColumns - 1] == 0) {
-			transitionCount++;
 		}
 
 		return transitionCount;
