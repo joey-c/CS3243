@@ -63,11 +63,11 @@ public class EvaluationFunction extends FitnessFunction {
 	private double calculateWeightedScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		double weightedScore = 0;
-		
+
 		// 1. Landing Height
-        double landingHeightScore = calculateLandingHeightScore(weights,
-                stateBeforeMove, stateAfterMove);
-        weightedScore += landingHeightScore;
+		double landingHeightScore = calculateLandingHeightScore(weights,
+				stateBeforeMove, stateAfterMove);
+		weightedScore += landingHeightScore;
 
 		// 2. Rows Cleared
 		double rowsClearedScore = calculateRowsClearedScore(weights,
@@ -105,7 +105,7 @@ public class EvaluationFunction extends FitnessFunction {
 		return weightedScore;
 	}
 
-    private double calculateCumulativeWellScore(double[] weights,
+	private double calculateCumulativeWellScore(double[] weights,
 			StateTester clonedState) {
 		double cumulativeWellsWeight = weights[Weight.CUMULATIVE_WELLS.Value];
 
@@ -372,51 +372,53 @@ public class EvaluationFunction extends FitnessFunction {
 		return rowsWithHoles;
 	}
 
-    // Took this from countRowsHoles(int[][]) and made it into a function
-    // as I was going to use it.
-    private int[] getColumnHeights(int[][] field) {
-        int rows = field.length;
-        int columns = field[0].length;
-        int[] columnHeights = new int[rows];
+	// Took this from countRowsHoles(int[][]) and made it into a function
+	// as I was going to use it.
+	private int[] getColumnHeights(int[][] field) {
+		int rows = field.length;
+		int columns = field[0].length;
+		int[] columnHeights = new int[rows];
 
-        // get height of columns
-        // 0: empty column
-        // 1: index 0 is the highest filled cell in the column
-        int row;
-        for (int column = 0; column < columns; column++) {
-            row = rows - 1; // fit indices
-            while (row >= 0 && field[row][column] == 0) {
-                row--;
-            }
-            columnHeights[column] = row + 1;
-        }
-        return columnHeights;
-    }
+		// get height of columns
+		// 0: empty column
+		// 1: index 0 is the highest filled cell in the column
+		int row;
+		for (int column = 0; column < columns; column++) {
+			row = rows - 1; // fit indices
+			while (row >= 0 && field[row][column] == 0) {
+				row--;
+			}
+			columnHeights[column] = row + 1;
+		}
+		return columnHeights;
+	}
 
-    private double calculateLandingHeightScore(double[] weights,
-            StateTester stateBeforeMove, StateTester stateAfterMove) {
-        double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
-        int landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
+	private double calculateLandingHeightScore(double[] weights,
+			StateTester stateBeforeMove, StateTester stateAfterMove) {
+		double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
+		int landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
 
-        return (double) landingHeight * landingHeightWeight;
-    }
+		return (double) landingHeight * landingHeightWeight;
+	}
 
-    // Calculates the lowest landing height of a piece before the filled rows
-    // are cleared.
-    private int findLandingHeight(StateTester stateBeforeMove, StateTester stateAfterMove) {
-        int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
-        int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());
-        int[] columnHeightsAfter = getColumnHeights(stateAfterMove.getField());
-        int numColumns = stateBeforeMove.getField()[0].length;
-        int landingHeight = 0;
+	// Calculates the lowest landing height of a piece before the filled rows
+	// are cleared.
+	private int findLandingHeight(StateTester stateBeforeMove,
+			StateTester stateAfterMove) {
+		int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
+		int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());
+		int[] columnHeightsAfter = getColumnHeights(stateAfterMove.getField());
+		int numColumns = stateBeforeMove.getField()[0].length;
+		int landingHeight = 0;
 
-        for (int i = 0; i < numColumns; i++) {
-            if (columnHeightsBefore[i] != columnHeightsAfter[i] + numRowsCleared) {
-                landingHeight = columnHeightsBefore[i];
-                break;
-            }
-        }
+		for (int i = 0; i < numColumns; i++) {
+			if (columnHeightsBefore[i] != columnHeightsAfter[i]
+					+ numRowsCleared) {
+				landingHeight = columnHeightsBefore[i];
+				break;
+			}
+		}
 
-        return landingHeight;
-    }
+		return landingHeight;
+	}
 }
