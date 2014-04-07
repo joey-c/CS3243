@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="jswarm-pso_2_08.jar"/>
+	<classpathentry kind="src" path="/SimpleSwarmer"/>
+	<classpathentry kind="lib" path="C:/Users/Jerome/SkyDrive/Documents/NUS Files/2013/Semester 2/CS3243 Introduction to Artificial Intelligence/Assignments/SimpleSwarmer.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

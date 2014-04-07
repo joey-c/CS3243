@@ -1,20 +1,30 @@
 package ParticleSwarmTest;
 
-import net.sourceforge.jswarm_pso.Swarm;
+import net.ayulin.simpleswarmer.OptimisationProblem;
+import net.ayulin.simpleswarmer.OptimisationStrategy;
+import net.ayulin.simpleswarmer.Swarm;
+
 
 public class SwarmTester {
 
 	public static void main(String[] args) {
-		Swarm swarm = new Swarm(Swarm.DEFAULT_NUMBER_OF_PARTICLES, new WeightParticle(), new EvaluationFunction());
-		swarm.setMaxPosition(10); // The maximum any one weight could be.
-		swarm.setMinPosition(-10); // The minimum any one weight could be.
+		OptimisationProblem problem = new OptimisationProblem();
+		problem.setDimensions(8);
+		problem.setMaxMinPosition(20);
+		problem.setNumberOfParticles(25);
+		problem.setParticleResetProbability(0.1);
+		problem.setStrategy(OptimisationStrategy.MAXIMISE);
 		
-		int maxSwarmIterations = 10000;
-		for (int i = 0; i < maxSwarmIterations; i++) {
-			swarm.evolve();
+		Swarm swarm = Swarm.forOptimisationProblem(problem);
+
+		double bestFitness = 0;
+		while (bestFitness < 1e6) {
+			swarm.optimise();
+			if (swarm.getBestScore() > bestFitness) {
+				bestFitness = swarm.getBestScore();
+				System.out.println(swarm.toStringStats());
+			}
 		}
-		
-		System.out.println(swarm.toStringStats());
 	}
 
 }

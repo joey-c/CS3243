@@ -1,6 +1,6 @@
 package ParticleSwarmTest;
 
-import net.sourceforge.jswarm_pso.FitnessFunction;
+import net.ayulin.simpleswarmer.EvaluationFunction;
 
 enum Weight {
 	LANDING_HEIGHT(0), ROWS_CLEARED(1), ROW_TRANSITIONS(2), COLUMN_TRANSITIONS(
@@ -13,10 +13,10 @@ enum Weight {
 	}
 }
 
-public class EvaluationFunction extends FitnessFunction {
+public class GameEvaluationFunction implements EvaluationFunction {
 
 	@Override
-	public double evaluate(double[] position) {
+	public double evaluatePosition(double[] position) {
 		// The position here is an array of all the weights.
 		// We need to play the game from start to finish using
 		// these weights, and return the number of rows cleared
