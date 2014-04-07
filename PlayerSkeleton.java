@@ -1,3 +1,4 @@
+
 enum Weight {
 	LANDING_HEIGHT(0), ROWS_CLEARED(1), ROW_TRANSITIONS(2), COLUMN_TRANSITIONS(
 			3), HOLES(4), CUMULATIVE_WELLS(5), HOLE_DEPTH(6), ROW_HOLES(7);
@@ -123,10 +124,10 @@ public class PlayerSkeleton {
 		// First element: orientation
 		// Second element: column
 		
-		final double[] weights = {-11.098463722162364, 2.178618353398938, 12.621533476832111, -9.595504591229025, -18.595431727163362, -16.04173401767037, -0.07051868409934281, -0.9048264609019214};
+		final double[] weights = {0, 0, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626, 0, 0};
 
 		int moveChoice = 0;
-		double currentHighScore = 0;	
+		double currentHighScore = Double.MIN_VALUE;	
 
 		for (int i = 0; i < legalMoves.length; i++) {
 			int[] currentMove = legalMoves[i];
@@ -142,7 +143,7 @@ public class PlayerSkeleton {
 
 			// If this move scores better than the previous ones,
 			// set it as our choice.
-			if (weightedScore > currentHighScore || i == 0) {
+			if (weightedScore > currentHighScore) {
 				currentHighScore = weightedScore;
 				moveChoice = i;
 			}		
@@ -195,8 +196,7 @@ public class PlayerSkeleton {
 
 		return weightedScore;
 	}
-
-    private double calculateCumulativeWellScore(double[] weights,
+	private double calculateCumulativeWellScore(double[] weights,
 			StateTester clonedState) {
 		double cumulativeWellsWeight = weights[Weight.CUMULATIVE_WELLS.Value];
 
@@ -286,7 +286,6 @@ public class PlayerSkeleton {
 	}
 
 	private int countBuriedHolesInColumn(int col, int[][] field) {
-
 		int holeCount = 0;
 		final int amountOfRows = field.length;
 
@@ -297,10 +296,8 @@ public class PlayerSkeleton {
 				if (field[row][col] == 0) {
 					holeCount++;
 				}
-			} else {
-				if (field[row][col] != 0) {
-					ceilingSeen = true;
-				}
+			} else if (field[row][col] != 0) {
+				ceilingSeen = true;
 			}
 		}
 
@@ -320,7 +317,6 @@ public class PlayerSkeleton {
 	}
 
 	private int countColumnTransitions(int[][] field) {
-
 		int columnTransitionCount = 0;
 		final int amountOfColumns = field[0].length;
 
@@ -332,25 +328,14 @@ public class PlayerSkeleton {
 	}
 
 	private int getTransitionCountForColumn(int col, int[][] field) {
-
 		int transitionCount = 0;
 		final int amountOfRows = field.length;
-
-		// Bottom implicitly filled
-		if (field[0][col] == 0) {
-			transitionCount++;
-		}
 
 		for (int row = 0; row < amountOfRows - 1; row++) {
 			if ((field[row][col] == 0 && field[row + 1][col] != 0)
 					|| (field[row][col] != 0 && field[row + 1][col] == 0)) {
 				transitionCount++;
 			}
-		}
-
-		// Top implicitly empty
-		if (field[amountOfRows - 1][col] != 0) {
-			transitionCount++;
 		}
 
 		return transitionCount;
@@ -374,32 +359,22 @@ public class PlayerSkeleton {
 		final int amountOfRows = field.length;
 
 		for (int row = 0; row < amountOfRows; row++) {
-			rowTransitionCount += getTransitionCountForRow(row, field);
+			int[] rowValues = field[row];
+			rowTransitionCount += getTransitionCountForRow(rowValues);
 		}
 
 		return rowTransitionCount;
 	}
 
-	private int getTransitionCountForRow(int row, int[][] field) {
-
+	private int getTransitionCountForRow(int[] row) {
 		int transitionCount = 0;
-		final int amountOfColumns = field[0].length;
-
-		// Left edge implicitly filled
-		if (field[row][0] == 0) {
-			transitionCount++;
-		}
+		final int amountOfColumns = row.length;
 
 		for (int col = 0; col < amountOfColumns - 1; col++) {
-			if ((field[row][col] == 0 && field[row][col + 1] != 0)
-					|| (field[row][col] != 0 && field[row][col + 1] == 0)) {
+			if ((row[col] == 0 && row[col + 1] != 0)
+					|| (row[col] != 0 && row[col + 1] == 0)) {
 				transitionCount++;
 			}
-		}
-
-		// Right edge implicitly filled
-		if (field[row][amountOfColumns - 1] == 0) {
-			transitionCount++;
 		}
 
 		return transitionCount;
@@ -485,53 +460,56 @@ public class PlayerSkeleton {
 		return rowsWithHoles;
 	}
 
-    // Took this from countRowsHoles(int[][]) and made it into a function
-    // as I was going to use it.
-    private int[] getColumnHeights(int[][] field) {
-        int rows = field.length;
-        int columns = field[0].length;
-        int[] columnHeights = new int[rows];
+	// Took this from countRowsHoles(int[][]) and made it into a function
+	// as I was going to use it.
+	private int[] getColumnHeights(int[][] field) {
+		int rows = field.length;
+		int columns = field[0].length;
+		int[] columnHeights = new int[rows];
 
-        // get height of columns
-        // 0: empty column
-        // 1: index 0 is the highest filled cell in the column
-        int row;
-        for (int column = 0; column < columns; column++) {
-            row = rows - 1; // fit indices
-            while (row >= 0 && field[row][column] == 0) {
-                row--;
-            }
-            columnHeights[column] = row + 1;
-        }
-        return columnHeights;
-    }
+		// get height of columns
+		// 0: empty column
+		// 1: index 0 is the highest filled cell in the column
+		int row;
+		for (int column = 0; column < columns; column++) {
+			row = rows - 1; // fit indices
+			while (row >= 0 && field[row][column] == 0) {
+				row--;
+			}
+			columnHeights[column] = row + 1;
+		}
+		return columnHeights;
+	}
 
-    private double calculateLandingHeightScore(double[] weights,
-            StateTester stateBeforeMove, StateTester stateAfterMove) {
-        double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
-        int landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
+	private double calculateLandingHeightScore(double[] weights,
+			StateTester stateBeforeMove, StateTester stateAfterMove) {
+		double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
+		int landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
 
-        return (double) landingHeight * landingHeightWeight;
-    }
+		return (double) landingHeight * landingHeightWeight;
+	}
 
-    // Calculates the lowest landing height of a piece before the filled rows
-    // are cleared.
-    private int findLandingHeight(StateTester stateBeforeMove, StateTester stateAfterMove) {
-        int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
-        int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());
-        int[] columnHeightsAfter = getColumnHeights(stateAfterMove.getField());
-        int numColumns = stateBeforeMove.getField()[0].length;
-        int landingHeight = 0;
+	// Calculates the lowest landing height of a piece before the filled rows
+	// are cleared.
+	private int findLandingHeight(StateTester stateBeforeMove,
+			StateTester stateAfterMove) {
+		int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
+		int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());
+		int[] columnHeightsAfter = getColumnHeights(stateAfterMove.getField());
+		int numColumns = stateBeforeMove.getField()[0].length;
+		int landingHeight = 0;
 
-        for (int i = 0; i < numColumns; i++) {
-            if (columnHeightsBefore[i] != columnHeightsAfter[i] + numRowsCleared) {
-                landingHeight = columnHeightsBefore[i];
-                break;
-            }
-        }
+		for (int i = 0; i < numColumns; i++) {
+			if (columnHeightsBefore[i] != columnHeightsAfter[i]
+					+ numRowsCleared) {
+				landingHeight = columnHeightsBefore[i];
+				break;
+			}
+		}
 
-        return landingHeight;
-    }
+		return landingHeight;
+	}
+	
 
 	public static void main(String[] args) {
 		State s = new State();
