@@ -35,7 +35,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 	private int pickMove(Game currentGame, int[][] moves, double[] weights) {
 		int moveChoice = 0;
-		double currentHighScore = 0;
+		double currentHighScore = Double.MIN_VALUE;
 
 		for (int i = 0; i < moves.length; i++) {
 			int[] currentMove = moves[i];
@@ -51,7 +51,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 			// If this move scores better than the previous ones,
 			// set it as our choice.
-			if (weightedScore > currentHighScore || i == 0) {
+			if (weightedScore > currentHighScore) {
 				currentHighScore = weightedScore;
 				moveChoice = i;
 			}
