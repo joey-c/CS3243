@@ -124,7 +124,7 @@ public class PlayerSkeleton {
 		// First element: orientation
 		// Second element: column
 		
-		final double[] weights = {0, 0, -3.2178882868487753, -9.348695305445199, -7.899265427351652, -3.3855972247263626, 0, 0};
+		final double[] weights = {-1.9470209446553228, 10.711242602273865, -1.543915926540385, 15.251223860144796, -19.93627114204452, -2.7003531677121497, -14.776583479576662, -17.511519948569415};
 
 		int moveChoice = 0;
 		double currentHighScore = Double.MIN_VALUE;	
