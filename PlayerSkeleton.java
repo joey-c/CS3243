@@ -41,8 +41,16 @@ class StateTester {
 
 	private StateTester(State s) {
 		this.nextPiece = s.getNextPiece();
-		this.field = s.getField();
-		this.top = s.getTop();
+
+		int[][] existingField = s.getField();
+		this.field = new int[existingField.length][existingField[0].length];
+		for (int row = 0; row < existingField.length; row++) {
+			System.arraycopy(existingField[row], 0, this.field[row], 0, existingField[row].length);
+		}
+
+		int[] existingTop = s.getTop();
+		this.top = new int[existingTop.length];
+		System.arraycopy(existingTop, 0, this.top, 0, existingTop.length);
 
 		turn = s.getTurnNumber() + 1;
 	}
@@ -450,8 +458,8 @@ public class PlayerSkeleton {
 
 		// count rows containing holes
 		for (int i = 0; i < rows; i++) {
-			for (int cell : field[i]) {
-				if (field[i][cell] == 0 && columnHeights[cell] > i) {
+			for (int col = 0; col < field[i].length; col++) {
+				if (field[i][col] == 0 && columnHeights[col] > i) {
 					rowsWithHoles++;
 					break;
 				}
