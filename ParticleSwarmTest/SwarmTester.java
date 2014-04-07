@@ -10,10 +10,11 @@ public class SwarmTester {
 	public static void main(String[] args) {
 		OptimisationProblem problem = new OptimisationProblem();
 		problem.setDimensions(8);
-		problem.setMaxMinPosition(20);
+		problem.setMaxMinPosition(30);
 		problem.setNumberOfParticles(25);
 		problem.setParticleResetProbability(0.1);
 		problem.setStrategy(OptimisationStrategy.MAXIMISE);
+		problem.setFunction(new GameEvaluationFunction());
 		
 		Swarm swarm = Swarm.forOptimisationProblem(problem);
 
