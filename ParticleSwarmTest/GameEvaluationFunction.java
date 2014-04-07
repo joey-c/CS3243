@@ -359,8 +359,8 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 		// count rows containing holes
 		for (int i = 0; i < rows; i++) {
-			for (int cell : field[i]) {
-				if (field[i][cell] == 0 && columnHeights[cell] > i) {
+			for (int col = 0; col < field[i].length; col++) {
+				if (field[i][col] == 0 && columnHeights[col] > i) {
 					rowsWithHoles++;
 					break;
 				}
