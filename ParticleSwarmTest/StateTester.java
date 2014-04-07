@@ -31,8 +31,16 @@ public class StateTester {
 
 	private StateTester(Game s) {
 		this.nextPiece = s.getNextPiece();
-		this.field = s.getField();
-		this.top = s.getTop();
+
+		int[][] existingField = s.getField();
+		this.field = new int[existingField.length][existingField[0].length];
+		for (int row = 0; row < existingField.length; row++) {
+			System.arraycopy(existingField[row], 0, this.field[row], 0, existingField[row].length);
+		}
+
+		int[] existingTop = s.getTop();
+		this.top = new int[existingTop.length];
+		System.arraycopy(existingTop, 0, this.top, 0, existingTop.length);
 
 		turn = s.getTurnNumber() + 1;
 	}
