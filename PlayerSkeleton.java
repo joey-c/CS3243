@@ -541,6 +541,31 @@ public class PlayerSkeleton {
 	
 
 	public static void main(String[] args) {
+		/*
+		new TFrame(s);
+		PlayerSkeleton p = new PlayerSkeleton();
+		while (!s.hasLost()) {
+			s.makeMove(p.pickMove(s, s.legalMoves()));
+			s.draw();
+			s.drawNext(0, 0);
+//			try {
+//				Thread.sleep(300);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+		}
+		System.out.println("You have completed " + s.getRowsCleared()
+				+ " rows.");
+		int rowsCleared = s.getRowsCleared();
+		total += rowsCleared;
+		if (rowsCleared > highest){
+			highest = rowsCleared;
+		}
+		if (lowest > rowsCleared){
+			lowest = rowsCleared;
+		}
+		*/
+		
 		int rounds = 10;
 		int total = 0;
 		int highest = Integer.MIN_VALUE;
