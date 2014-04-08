@@ -418,8 +418,8 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return (double) landingHeight * landingHeightWeight;
 	}
 
-	// Calculates the lowest landing height of a piece before the filled rows
-	// are cleared.
+	// Calculates average landing height of a piece across its width,
+	// before the filled rows are cleared.
     private double findLandingHeight(StateTester stateBeforeMove,
                                      StateTester stateAfterMove) {
         int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
