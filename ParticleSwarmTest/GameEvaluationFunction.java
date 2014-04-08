@@ -393,29 +393,30 @@ public class GameEvaluationFunction implements EvaluationFunction {
 	private double calculateLandingHeightScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
-		int landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
+		double landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
 
 		return (double) landingHeight * landingHeightWeight;
 	}
 
 	// Calculates the lowest landing height of a piece before the filled rows
 	// are cleared.
-	private int findLandingHeight(StateTester stateBeforeMove,
-			StateTester stateAfterMove) {
-		int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
-		int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());
-		int[] columnHeightsAfter = getColumnHeights(stateAfterMove.getField());
-		int numColumns = stateBeforeMove.getField()[0].length;
-		int landingHeight = 0;
+    private double findLandingHeight(StateTester stateBeforeMove,
+                                     StateTester stateAfterMove) {
+        int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
+        int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());
+        int[] columnHeightsAfter = getColumnHeights(stateAfterMove.getField());
+        int numColumns = stateBeforeMove.getField()[0].length;
+        int landingHeightsSum = 0;
+        int pieceWidth = 0;
 
-		for (int i = 0; i < numColumns; i++) {
-			if (columnHeightsBefore[i] != columnHeightsAfter[i]
-					+ numRowsCleared) {
-				landingHeight = columnHeightsBefore[i];
-				break;
-			}
-		}
+        for (int i = 0; i < numColumns; i++) {
+            if (columnHeightsBefore[i] != columnHeightsAfter[i]
+                    + numRowsCleared) {
+                landingHeightsSum += columnHeightsBefore[i];
+                pieceWidth++;
+            }
+        }
 
-		return landingHeight;
-	}
+        return (double) landingHeightsSum / pieceWidth;
+    }
 }
