@@ -1,3 +1,4 @@
+import java.util.Arrays; //for printing
 
 enum Weight {
 	LANDING_HEIGHT(0), ROWS_CLEARED(1), ROW_TRANSITIONS(2), COLUMN_TRANSITIONS(
@@ -133,6 +134,7 @@ public class PlayerSkeleton {
 		// Second element: column
 		
 		final double[] weights = {-5.59900703135594, -6.74535866367302, -12.264831370966093, -18.129457289500532, -5.702229179697653, -5.406778640076446, -3.4440159012200944, -14.373081507105464};
+		//final double[] weights = {-1, 1, -1, -1, -4, -1, 0, 0};
 
 		int moveChoice = 0;
 		double currentHighScore = Double.NEGATIVE_INFINITY;	
@@ -566,18 +568,27 @@ public class PlayerSkeleton {
 		}
 		*/
 		
-		int rounds = 10;
+		int rounds = 5;
 		int total = 0;
 		int highest = Integer.MIN_VALUE;
 		int lowest = Integer.MAX_VALUE;
+		int results[] = new int[rounds];
 		for (int i = 0; i < rounds; i++){
 			State s = new State();
-			new TFrame(s);
+			//new TFrame(s);
 			PlayerSkeleton p = new PlayerSkeleton();
+			int lastCleared = 0;
 			while (!s.hasLost()) {
 				s.makeMove(p.pickMove(s, s.legalMoves()));
-				s.draw();
-				s.drawNext(0, 0);
+				
+				int cleared = s.getRowsCleared();
+				if (cleared % 10000 == 0 && cleared != lastCleared){
+					lastCleared = cleared;
+					System.out.println("Rows cleared: " + cleared);
+				}
+
+				//s.draw();
+				//s.drawNext(0, 0);
 				/*try {
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
@@ -587,6 +598,7 @@ public class PlayerSkeleton {
 			System.out.println("You have completed " + s.getRowsCleared()
 					+ " rows.");
 			int rowsCleared = s.getRowsCleared();
+			results[i] = rowsCleared;
 			total += rowsCleared;
 			if (rowsCleared > highest){
 				highest = rowsCleared;
@@ -595,6 +607,7 @@ public class PlayerSkeleton {
 				lowest = rowsCleared;
 			}
 		}
+		System.out.println("Results: " + Arrays.toString(results));
 		System.out.println("Highest: " + highest);
 		System.out.println("Lowest: " + lowest);
 		System.out.println("Average: " + total/rounds);
