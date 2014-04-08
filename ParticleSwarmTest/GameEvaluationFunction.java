@@ -240,11 +240,21 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		int transitionCount = 0;
 		final int amountOfRows = field.length;
 
+		// Bottom implicitly filled
+		if (field[0][col] == 0) {
+			transitionCount++;
+		}
+
 		for (int row = 0; row < amountOfRows - 1; row++) {
 			if ((field[row][col] == 0 && field[row + 1][col] != 0)
 					|| (field[row][col] != 0 && field[row + 1][col] == 0)) {
 				transitionCount++;
 			}
+		}
+
+		// Top implicitly empty
+		if (field[amountOfRows - 1][col] != 0) {
+			transitionCount++;
 		}
 
 		return transitionCount;
@@ -268,22 +278,32 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		final int amountOfRows = field.length;
 
 		for (int row = 0; row < amountOfRows; row++) {
-			int[] rowValues = field[row];
-			rowTransitionCount += getTransitionCountForRow(rowValues);
+			rowTransitionCount += getTransitionCountForRow(row, field);
 		}
 
 		return rowTransitionCount;
 	}
 
-	private int getTransitionCountForRow(int[] row) {
+	private int getTransitionCountForRow(int row, int[][] field) {
+
 		int transitionCount = 0;
-		final int amountOfColumns = row.length;
+		final int amountOfColumns = field[0].length;
+
+		// Left edge implicitly filled
+		if (field[row][0] == 0) {
+			transitionCount++;
+		}
 
 		for (int col = 0; col < amountOfColumns - 1; col++) {
-			if ((row[col] == 0 && row[col + 1] != 0)
-					|| (row[col] != 0 && row[col + 1] == 0)) {
+			if ((field[row][col] == 0 && field[row][col + 1] != 0)
+					|| (field[row][col] != 0 && field[row][col + 1] == 0)) {
 				transitionCount++;
 			}
+		}
+
+		// Right edge implicitly filled
+		if (field[row][amountOfColumns - 1] == 0) {
+			transitionCount++;
 		}
 
 		return transitionCount;
