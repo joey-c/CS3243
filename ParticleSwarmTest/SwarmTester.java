@@ -11,15 +11,16 @@ public class SwarmTester {
 		OptimisationProblem problem = new OptimisationProblem();
 		problem.setDimensions(8);
 		problem.setMaxMinPosition(20);
-		problem.setNumberOfParticles(100);
-		problem.setParticleResetProbability(0.1);
+		problem.setMaxMinVelocity(10);
+		problem.setNumberOfParticles(200);
+		problem.setParticleResetProbability(0.2);
 		problem.setStrategy(OptimisationStrategy.MAXIMISE);
 		problem.setFunction(new GameEvaluationFunction());
 		
 		Swarm swarm = Swarm.forOptimisationProblem(problem);
 
 		double bestFitness = 0;
-		while (bestFitness < 1e6) {
+		while (bestFitness < 1e7) {
 			swarm.optimise();
 			if (swarm.getBestScore() > bestFitness) {
 				bestFitness = swarm.getBestScore();
