@@ -135,7 +135,7 @@ public class PlayerSkeleton {
 		final double[] weights = {-0.9688760448682666, 1.6745776494980364, -0.6416325275407198, 9.507886401694847, -20.0, -0.9250600624530636, 0.16776394160879354, -4.727027063488643};
 
 		int moveChoice = 0;
-		double currentHighScore = Double.MIN_VALUE;	
+		double currentHighScore = Double.NEGATIVE_INFINITY;	
 
 		for (int i = 0; i < legalMoves.length; i++) {
 			int[] currentMove = legalMoves[i];
