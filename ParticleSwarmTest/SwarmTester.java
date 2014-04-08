@@ -20,7 +20,7 @@ public class SwarmTester {
 		Swarm swarm = Swarm.forOptimisationProblem(problem);
 
 		double bestFitness = 0;
-		while (bestFitness < 1e6) {
+		while (bestFitness < 1e7) {
 			swarm.optimise();
 			if (swarm.getBestScore() > bestFitness) {
 				bestFitness = swarm.getBestScore();
