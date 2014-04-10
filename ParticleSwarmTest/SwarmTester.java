@@ -1,5 +1,7 @@
 package ParticleSwarmTest;
 
+import java.util.Date;
+
 import net.ayulin.simpleswarmer.OptimisationProblem;
 import net.ayulin.simpleswarmer.OptimisationStrategy;
 import net.ayulin.simpleswarmer.Swarm;
@@ -30,7 +32,11 @@ public class SwarmTester {
 		swarm.seedParticlePosition(2, new double[] { -1.0, 1.0, -1.0, -1.0, -4.0, -1.0, 0, 0 });
 
 		double bestFitness = 0;
+		int rounds = 0;
 		while (bestFitness < 1e8) {
+			System.out.println(String.format("Round %d started at %s", rounds, new Date()));
+			rounds++;
+
 			swarm.optimise();
 			if (swarm.getBestScore() > bestFitness) {
 				bestFitness = swarm.getBestScore();
