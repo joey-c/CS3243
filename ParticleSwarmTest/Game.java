@@ -1,6 +1,5 @@
 package ParticleSwarmTest;
 
-// Just copy-pasted from State.
 public class Game {
 	public static final int COLS = 10;
 	public static final int ROWS = 21;

@@ -567,7 +567,7 @@ public class PlayerSkeleton {
 		}
 		*/
 		
-		int rounds = 5;
+		int rounds = 10;
 		int total = 0;
 		int highest = Integer.MIN_VALUE;
 		int lowest = Integer.MAX_VALUE;

@@ -2,6 +2,13 @@ package ParticleSwarmTest;
 
 import net.ayulin.simpleswarmer.EvaluationFunction;
 
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 enum Weight {
 	LANDING_HEIGHT(0), ROWS_CLEARED(1), ROW_TRANSITIONS(2), COLUMN_TRANSITIONS(
 			3), HOLES(4), CUMULATIVE_WELLS(5), HOLE_DEPTH(6), ROW_HOLES(7);
@@ -14,6 +21,8 @@ enum Weight {
 }
 
 public class GameEvaluationFunction implements EvaluationFunction {
+	int gamesToAverageOver = 4;
+	ExecutorService threadPool = Executors.newFixedThreadPool (gamesToAverageOver);
 
 	@Override
 	public double evaluatePosition(double[] position) {
@@ -21,19 +30,43 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		// We need to play the game from start to finish using
 		// these weights, and return the number of rows cleared
 		// (or some other metric based on that).
-		Game currentGame = new Game();
-		while (!currentGame.hasLost()) {
-			int[][] moves = currentGame.legalMoves();
 
-			int chosenMove = pickMove(currentGame, moves, position);
-			currentGame.makeMove(chosenMove);
+		ArrayList<Future<Double>> trackers = new ArrayList<Future<Double>>();
+
+		for (int i = 0; i < gamesToAverageOver; i++){
+			Callable<Double> game = new CallableGame(position, i);
+			Future<Double> tracker = threadPool.submit(game);
+			trackers.add(tracker);
 		}
 
-		int rowsCleared = currentGame.getRowsCleared();
-		return rowsCleared;
+		int total = 0;
+		int successfulGames = 0;
+				
+		while (!trackers.isEmpty()){
+			Future<Double> currentTracker = trackers.get(0);
+			if (currentTracker.isDone()){
+				try {
+					total += currentTracker.get();
+					successfulGames++;
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				trackers.remove(currentTracker);
+			}
+		}
+
+		if (successfulGames > 0){
+			return total/successfulGames;
+		} else {
+			return 0;
+		}
 	}
 
-	private int pickMove(Game currentGame, int[][] moves, double[] weights) {
+	protected static int pickMove(Game currentGame, int[][] moves, double[] weights) {
 		int moveChoice = 0;
 		double currentHighScore = Double.NEGATIVE_INFINITY;
 
@@ -60,7 +93,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return moveChoice;
 	}
 
-	private double calculateWeightedScore(double[] weights,
+	private static double calculateWeightedScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		double weightedScore = 0;
 
@@ -105,7 +138,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return weightedScore;
 	}
 
-	private double calculateCumulativeWellScore(double[] weights,
+	private static double calculateCumulativeWellScore(double[] weights,
 			StateTester clonedState) {
 		double cumulativeWellsWeight = weights[Weight.CUMULATIVE_WELLS.Value];
 
@@ -117,7 +150,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return score;
 	}
 
-	private int countCumulativeWells(int[][] field) {
+	private static int countCumulativeWells(int[][] field) {
 
 		int cumulativeWellsCount = 0;
 		final int amountOfColumns = field[0].length;
@@ -130,7 +163,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 	}
 
-	private int countCumulativeWells(int col, int[][] field) {
+	private static int countCumulativeWells(int col, int[][] field) {
 
 		int wellCount = 0;
 		final int amountOfRows = field.length;
@@ -170,7 +203,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return wellCount;
 	}
 
-	private double calculateBuriedHolesScore(double[] weights,
+	private static double calculateBuriedHolesScore(double[] weights,
 			StateTester clonedState) {
 		double buriedHolesWeight = weights[Weight.HOLES.Value];
 
@@ -182,7 +215,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return score;
 	}
 
-	private int countBuriedHoles(int[][] field) {
+	private static int countBuriedHoles(int[][] field) {
 
 		int buriedHolesCount = 0;
 		final int amountOfColumns = field[0].length;
@@ -194,7 +227,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return buriedHolesCount;
 	}
 
-	private int countBuriedHolesInColumn(int col, int[][] field) {
+	private static int countBuriedHolesInColumn(int col, int[][] field) {
 		int holeCount = 0;
 		final int amountOfRows = field.length;
 
@@ -213,7 +246,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return holeCount;
 	}
 
-	private double calculateColumnTransitionScore(double[] weights,
+	private static double calculateColumnTransitionScore(double[] weights,
 			StateTester clonedState) {
 		double columnTransitionWeight = weights[Weight.COLUMN_TRANSITIONS.Value];
 
@@ -225,7 +258,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return score;
 	}
 
-	private int countColumnTransitions(int[][] field) {
+	private static int countColumnTransitions(int[][] field) {
 		int columnTransitionCount = 0;
 		final int amountOfColumns = field[0].length;
 
@@ -236,7 +269,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return columnTransitionCount;
 	}
 
-	private int getTransitionCountForColumn(int col, int[][] field) {
+	private static int getTransitionCountForColumn(int col, int[][] field) {
 		int transitionCount = 0;
 		final int amountOfRows = field.length;
 
@@ -260,7 +293,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return transitionCount;
 	}
 
-	private double calculateRowTransitionScore(double[] weights,
+	private static double calculateRowTransitionScore(double[] weights,
 			StateTester clonedState) {
 		double rowTransitionWeight = weights[Weight.ROW_TRANSITIONS.Value];
 
@@ -272,7 +305,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return score;
 	}
 
-	private int countRowTransitions(int[][] field) {
+	private static int countRowTransitions(int[][] field) {
 
 		int rowTransitionCount = 0;
 		final int amountOfRows = field.length;
@@ -284,7 +317,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return rowTransitionCount;
 	}
 
-	private int getTransitionCountForRow(int row, int[][] field) {
+	private static int getTransitionCountForRow(int row, int[][] field) {
 
 		int transitionCount = 0;
 		final int amountOfColumns = field[0].length;
@@ -310,7 +343,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 	}
 
-	private double calculateHoleDepthScore(double[] weights,
+	private static double calculateHoleDepthScore(double[] weights,
 			StateTester clonedState) {
 		double holeDepthWeight = weights[Weight.HOLE_DEPTH.Value];
 
@@ -321,7 +354,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return score;
 	}
 
-	private int countHoleDepth(int[][] field) {
+	private static int countHoleDepth(int[][] field) {
 		int totalHoleDepth = 0;
 
 		final int amountOfColumns = field[0].length;
@@ -351,7 +384,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return totalHoleDepth;
 	}
 
-	private double calculateRowsClearedScore(double[] weights,
+	private static double calculateRowsClearedScore(double[] weights,
 			StateTester clonedState) {
 		double rowsClearedWeight = weights[Weight.ROWS_CLEARED.Value];
 		double rowsClearedScore = clonedState.rowsClearedAfterMove
@@ -359,7 +392,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return rowsClearedScore;
 	}
 
-	private double calculateRowsHolesScore(double[] weights,
+	private static double calculateRowsHolesScore(double[] weights,
 			StateTester clonedState) {
 		double rowsHolesWeight = weights[Weight.ROW_HOLES.Value];
 
@@ -372,7 +405,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 	// A cell is a hole, or part of, if it is empty and
 	// its row is lower than its column's height
-	private int countRowsHoles(int[][] field) {
+	private static int countRowsHoles(int[][] field) {
 		int rowsWithHoles = 0;
 		int rows = field.length;
 		int[] columnHeights = getColumnHeights(field);
@@ -391,7 +424,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 	// Took this from countRowsHoles(int[][]) and made it into a function
 	// as I was going to use it.
-	private int[] getColumnHeights(int[][] field) {
+	private static int[] getColumnHeights(int[][] field) {
 		int rows = field.length;
 		int columns = field[0].length;
 		int[] columnHeights = new int[rows];
@@ -410,7 +443,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 		return columnHeights;
 	}
 
-	private double calculateLandingHeightScore(double[] weights,
+	private static double calculateLandingHeightScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		double landingHeightWeight = weights[Weight.LANDING_HEIGHT.Value];
 		double landingHeight = findLandingHeight(stateBeforeMove, stateAfterMove);
@@ -420,7 +453,7 @@ public class GameEvaluationFunction implements EvaluationFunction {
 
 	// Calculates average landing height of a piece across its width,
 	// before the filled rows are cleared.
-    private double findLandingHeight(StateTester stateBeforeMove,
+    private static double findLandingHeight(StateTester stateBeforeMove,
                                      StateTester stateAfterMove) {
         int numRowsCleared = stateAfterMove.rowsClearedAfterMove;
         int[] columnHeightsBefore = getColumnHeights(stateBeforeMove.getField());

@@ -20,6 +20,7 @@ public class SwarmTester {
 
 		Swarm swarm = Swarm.forOptimisationProblem(problem);
 
+		/*
 		// Our own best-known weights.
 		swarm.seedParticlePosition(0, new double[] { -8.246690443403839, 5.5653965284795035, -6.0028118815494835, -13.893704583221037,
 				-7.686314111961439, -10.50286050418964, -3.042176134157476, -18.186194325237683 });
@@ -30,7 +31,8 @@ public class SwarmTester {
 
 		// Pierre's weights.
 		swarm.seedParticlePosition(2, new double[] { -1.0, 1.0, -1.0, -1.0, -4.0, -1.0, 0, 0 });
-
+		 */
+		
 		double bestFitness = 0;
 		int rounds = 0;
 		while (bestFitness < 1e8) {
