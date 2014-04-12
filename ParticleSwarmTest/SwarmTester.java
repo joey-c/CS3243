@@ -36,8 +36,8 @@ public class SwarmTester {
 		double bestFitness = 0;
 		int rounds = 0;
 		while (bestFitness < 1e8) {
-			System.out.println(String.format("Round %d started at %s", rounds, new Date()));
 			rounds++;
+			System.out.println(String.format("Round %d started at %s", rounds, new Date()));
 
 			swarm.optimise();
 			if (swarm.getBestScore() > bestFitness) {
