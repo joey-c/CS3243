@@ -1,4 +1,10 @@
-import java.util.Arrays; //for printing
+//for parallelizing
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 enum Weight {
 	LANDING_HEIGHT(0), ROWS_CLEARED(1), ROW_TRANSITIONS(2), COLUMN_TRANSITIONS(
@@ -132,11 +138,11 @@ public class PlayerSkeleton {
 		// legalMoves: array of two-element arrays
 		// First element: orientation
 		// Second element: column
-		
+
 		final double[] weights = {-8.246690443403839, 5.5653965284795035, -6.0028118815494835, -13.893704583221037, -7.686314111961439, -10.50286050418964, -3.042176134157476, -18.186194325237683};
 
 		int moveChoice = 0;
-		double currentHighScore = Double.NEGATIVE_INFINITY;	
+		double currentHighScore = Double.NEGATIVE_INFINITY;
 
 		for (int i = 0; i < legalMoves.length; i++) {
 			int[] currentMove = legalMoves[i];
@@ -155,16 +161,16 @@ public class PlayerSkeleton {
 			if (weightedScore > currentHighScore) {
 				currentHighScore = weightedScore;
 				moveChoice = i;
-			}		
+			}
 		}
 
 		return moveChoice;
 	}
-	
+
 	private double calculateWeightedScore(double[] weights,
 			StateTester stateBeforeMove, StateTester stateAfterMove) {
 		double weightedScore = 0;
-		
+
 		// 1. Landing Height
         double landingHeightScore = calculateLandingHeightScore(weights,
                 stateBeforeMove, stateAfterMove);
@@ -539,7 +545,7 @@ public class PlayerSkeleton {
 
 		return (double) landingHeightsSum / pieceWidth;
 	}
-	
+
 
 	public static void main(String[] args) {
 		/*
@@ -566,49 +572,59 @@ public class PlayerSkeleton {
 			lowest = rowsCleared;
 		}
 		*/
-		
+
 		int rounds = 10;
+		int successfulRounds = 0;
+		ExecutorService threadPool = Executors.newFixedThreadPool (rounds);
+		ArrayList<Future<Integer>> trackers = new ArrayList<Future<Integer>>();
+
+		for (int i = 0; i < rounds; i++){
+			Callable<Integer> state = new CallableState(i);
+			Future<Integer> tracker = threadPool.submit(state);
+			trackers.add(tracker);
+		}
+
 		int total = 0;
 		int highest = Integer.MIN_VALUE;
 		int lowest = Integer.MAX_VALUE;
-		int results[] = new int[rounds];
-		for (int i = 0; i < rounds; i++){
-			State s = new State();
-			//new TFrame(s);
-			PlayerSkeleton p = new PlayerSkeleton();
-			int lastCleared = 0;
-			while (!s.hasLost()) {
-				s.makeMove(p.pickMove(s, s.legalMoves()));
-				
-				int cleared = s.getRowsCleared();
-				if (cleared % 10000 == 0 && cleared != lastCleared){
-					lastCleared = cleared;
-					System.out.println("Rows cleared: " + cleared);
-				}
+		ArrayList<Integer> results = new ArrayList<Integer>();
 
-				//s.draw();
-				//s.drawNext(0, 0);
-				/*try {
-					Thread.sleep(300);
+		while (!trackers.isEmpty()){
+			Future<Integer> currentTracker = trackers.get(0);
+			if (currentTracker.isDone()){
+				try {
+					int currentResult = currentTracker.get();
+					results.add(currentResult);
+					total += currentResult;
+					successfulRounds++;
+					if (currentResult > highest){
+						highest = currentResult;
+					}
+					if (lowest > currentResult){
+						lowest = currentResult;
+					}
 				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}*/
-			}
-			System.out.println("You have completed " + s.getRowsCleared()
-					+ " rows.");
-			int rowsCleared = s.getRowsCleared();
-			results[i] = rowsCleared;
-			total += rowsCleared;
-			if (rowsCleared > highest){
-				highest = rowsCleared;
-			}
-			if (lowest > rowsCleared){
-				lowest = rowsCleared;
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				trackers.remove(currentTracker);
 			}
 		}
-		System.out.println("Results: " + Arrays.toString(results));
-		System.out.println("Highest: " + highest);
-		System.out.println("Lowest: " + lowest);
-		System.out.println("Average: " + total/rounds);
+
+		if (successfulRounds > 0){
+			System.out.println("Rounds attempted: " + rounds);
+			System.out.println("Rounds completed: " + successfulRounds);
+			for (double result : results){
+				System.out.println(result);
+		  }
+			System.out.println("Highest: " + highest);
+			System.out.println("Lowest: " + lowest);
+			System.out.println("Average: " + total/successfulRounds);
+		} else {
+			System.out.println("No successful rounds.");
+		}
 	}
 }
