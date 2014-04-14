@@ -21,7 +21,7 @@ enum Weight {
 }
 
 public class GameEvaluationFunction implements EvaluationFunction {
-	int gamesToAverageOver = 4;
+	int gamesToAverageOver = 10;
 	ExecutorService threadPool = Executors.newFixedThreadPool (gamesToAverageOver);
 
 	@Override

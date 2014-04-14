@@ -31,10 +31,10 @@ public class SwarmTester {
 
 		// Pierre's weights.
 		swarm.seedParticlePosition(2, new double[] { -1.0, 1.0, -1.0, -1.0, -4.0, -1.0, 0, 0 });
-		 */
+		*/
 		
 		double bestFitness = 0;
-		int rounds = 0;
+		int rounds = 5;
 		while (bestFitness < 1e8) {
 			System.out.println(String.format("Round %d started at %s", rounds, new Date()));
 			rounds++;
