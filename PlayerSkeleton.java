@@ -1,3 +1,5 @@
+import java.util.Date;
+
 //for parallelizing
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -578,6 +580,8 @@ public class PlayerSkeleton {
 		ExecutorService threadPool = Executors.newFixedThreadPool (rounds);
 		ArrayList<Future<Integer>> trackers = new ArrayList<Future<Integer>>();
 
+		System.out.println(String.format("Started at %s", new Date()));
+
 		for (int i = 0; i < rounds; i++){
 			Callable<Integer> state = new CallableState(i);
 			Future<Integer> tracker = threadPool.submit(state);
@@ -626,5 +630,8 @@ public class PlayerSkeleton {
 		} else {
 			System.out.println("No successful rounds.");
 		}
+
+		System.out.println(String.format("Completed at %s", new Date()));
+
 	}
 }
