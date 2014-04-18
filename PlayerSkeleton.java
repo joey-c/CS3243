@@ -141,8 +141,7 @@ public class PlayerSkeleton {
 		// First element: orientation
 		// Second element: column
 
-		final double[] weights = {-8.246690443403839, 5.5653965284795035, -6.0028118815494835, -13.893704583221037, -7.686314111961439, -10.50286050418964, -3.042176134157476, -18.186194325237683};
-
+		final double[] weights = {-3.261362515614646, 6.842152685545194, -4.598013143029638, -11.593996845004808, -5.560643082418299, -5.156019621545189, -0.49775723537051064, -12.274343097194112};
 		int moveChoice = 0;
 		double currentHighScore = Double.NEGATIVE_INFINITY;
 
@@ -575,7 +574,7 @@ public class PlayerSkeleton {
 		}
 		*/
 
-		int rounds = 10;
+		int rounds = 5;
 		int successfulRounds = 0;
 		ExecutorService threadPool = Executors.newFixedThreadPool (rounds);
 		ArrayList<Future<Integer>> trackers = new ArrayList<Future<Integer>>();
